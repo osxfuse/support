@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4331907E169514D500DE73A9 /* load_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190751695145C00DE73A9 /* load_osxfuse */; };
+		4331907F169514D900DE73A9 /* mount_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190781695145C00DE73A9 /* mount_osxfuse */; };
+		4397693C1693A377001B7C4A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4397693A1693A377001B7C4A /* InfoPlist.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		433190741695145C00DE73A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 433E5DC213B2D1B300A523B2;
+			remoteInfo = load_osxfuse;
+		};
+		433190771695145C00DE73A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 433E5DC413B2D1B300A523B2;
+			remoteInfo = mount_osxfuse;
+		};
+		4331907A169514B500DE73A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 540966160C33B4CB00F5E227;
+			remoteInfo = mount_osxfuse;
+		};
+		4331907C169514B500DE73A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 54D47B7F0B4F610000A8FE1C;
+			remoteInfo = load_osxfuse;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = load_osxfuse.xcodeproj; sourceTree = "<group>"; };
+		433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = mount_osxfuse.xcodeproj; sourceTree = "<group>"; };
+		435958DA15120F5500B4D7F5 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		437FB63015E1798100CFF17A /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		439769351693A377001B7C4A /* osxfuse.fs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = osxfuse.fs; sourceTree = BUILT_PRODUCTS_DIR; };
+		439769391693A377001B7C4A /* osxfusefs-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-Info.plist"; sourceTree = "<group>"; };
+		4397693B1693A377001B7C4A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4397693D1693A377001B7C4A /* osxfusefs-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "osxfusefs-Prefix.pch"; sourceTree = "<group>"; };
+		439769481693A8B2001B7C4A /* osxfusefs-version.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-version.plist"; sourceTree = "<group>"; };
+		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
+		540966530C33B5F500F5E227 /* fuse_mount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_mount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		540966540C33B5F500F5E227 /* fuse_param.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_param.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		540966550C33B5F500F5E227 /* fuse_version.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_version.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		541780C00B6413CA003DE6C0 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiskArbitration.framework; path = /System/Library/Frameworks/DiskArbitration.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* fusefs */ = {
+			isa = PBXGroup;
+			children = (
+				433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */,
+				433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */,
+				540966510C33B5F500F5E227 /* Common */,
+				439769371693A377001B7C4A /* osxfuse.fs */,
+				5409662C0C33B54300F5E227 /* Frameworks */,
+				433E5DC813B2D21900A523B2 /* Products */,
+				439769351693A377001B7C4A /* osxfuse.fs */,
+			);
+			name = fusefs;
+			sourceTree = "<group>";
+		};
+		433190661695145C00DE73A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				433190751695145C00DE73A9 /* load_osxfuse */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		433190691695145C00DE73A9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				433190781695145C00DE73A9 /* mount_osxfuse */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		433E5DC813B2D21900A523B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		439769371693A377001B7C4A /* osxfuse.fs */ = {
+			isa = PBXGroup;
+			children = (
+				439769381693A377001B7C4A /* Supporting Files */,
+			);
+			name = osxfuse.fs;
+			path = osxfusefs;
+			sourceTree = "<group>";
+		};
+		439769381693A377001B7C4A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				439769391693A377001B7C4A /* osxfusefs-Info.plist */,
+				439769481693A8B2001B7C4A /* osxfusefs-version.plist */,
+				4397693A1693A377001B7C4A /* InfoPlist.strings */,
+				4397693D1693A377001B7C4A /* osxfusefs-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		5409662C0C33B54300F5E227 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				541780C00B6413CA003DE6C0 /* CoreFoundation.framework */,
+				435958DA15120F5500B4D7F5 /* CoreServices.framework */,
+				54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */,
+				437FB63015E1798100CFF17A /* IOKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		540966510C33B5F500F5E227 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				540966520C33B5F500F5E227 /* fuse_ioctl.h */,
+				540966530C33B5F500F5E227 /* fuse_mount.h */,
+				540966540C33B5F500F5E227 /* fuse_param.h */,
+				540966550C33B5F500F5E227 /* fuse_version.h */,
+			);
+			name = Common;
+			path = ../common;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		439769341693A377001B7C4A /* osxfuse.fs */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4397693E1693A377001B7C4A /* Build configuration list for PBXNativeTarget "osxfuse.fs" */;
+			buildPhases = (
+				439769541693B014001B7C4A /* Preprocess Property Lists */,
+				43318FF51693C73900DE73A9 /* Copy Version Property List */,
+				439769331693A377001B7C4A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4331907B169514B500DE73A9 /* PBXTargetDependency */,
+				4331907D169514B500DE73A9 /* PBXTargetDependency */,
+			);
+			name = osxfuse.fs;
+			productName = test;
+			productReference = 439769351693A377001B7C4A /* osxfuse.fs */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "osxfusefs" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 089C166AFE841209C02AAC07 /* fusefs */;
+			productRefGroup = 089C166AFE841209C02AAC07 /* fusefs */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 433190661695145C00DE73A9 /* Products */;
+					ProjectRef = 433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */;
+				},
+				{
+					ProductGroup = 433190691695145C00DE73A9 /* Products */;
+					ProjectRef = 433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				439769341693A377001B7C4A /* osxfuse.fs */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		433190751695145C00DE73A9 /* load_osxfuse */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = load_osxfuse;
+			remoteRef = 433190741695145C00DE73A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		433190781695145C00DE73A9 /* mount_osxfuse */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = mount_osxfuse;
+			remoteRef = 433190771695145C00DE73A9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		439769331693A377001B7C4A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4397693C1693A377001B7C4A /* InfoPlist.strings in Resources */,
+				4331907E169514D500DE73A9 /* load_osxfuse in Resources */,
+				4331907F169514D900DE73A9 /* mount_osxfuse in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		43318FF51693C73900DE73A9 /* Copy Version Property List */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Version Property List";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp -f \"${DERIVED_FILE_DIR}/osxfusefs-version.plist\" \"${BUILT_PRODUCTS_DIR}/${VERSIONPLIST_PATH}\"";
+		};
+		439769541693B014001B7C4A /* Preprocess Property Lists */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/osxfusefs/osxfusefs-Info.plist",
+				"$(SRCROOT)/osxfusefs/osxfusefs-version.plist",
+			);
+			name = "Preprocess Property Lists";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/osxfusefs-Info.plist",
+				"$(DERIVED_FILE_DIR)/osxfusefs-version.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "for (( i=0 ; i < ${SCRIPT_INPUT_FILE_COUNT} && i < ${SCRIPT_OUTPUT_FILE_COUNT}; i++ ))\ndo\n    input_file_p=\"SCRIPT_INPUT_FILE_${i}\"\n    output_file_p=\"SCRIPT_OUTPUT_FILE_${i}\"\n    preprocessed_file=\"${DERIVED_FILE_DIR}/Preprocessed-$(basename \"${!input_file_p}\")\"\n\n    xcrun cc -E -P -x c -Wno-trigraphs -I\"$SRCROOT/../common\" \"${!input_file_p}\" > \"${preprocessed_file}\"\n    /usr/libexec/PlistBuddy -c \"Save\" \"${preprocessed_file}\"\n\n    awk '\n        {\n            i = match($0, /\\${[a-zA-Z_][0-9a-zA-Z_]*}/)\n            while (i > 0) {\n                s = substr($0, i+2)\n                n = substr(s, 1, index(s, \"}\") - 1)\n                gsub(\"\\\\${\" n \"}\", ENVIRON[n], $0)\n            \n                i = match($0, /\\${[a-zA-Z_][0-9a-zA-Z_]*}/)\n            }\n            print $0\n        }' \"${preprocessed_file}\" > \"${!output_file_p}\"    \ndone";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4331907B169514B500DE73A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = mount_osxfuse;
+			targetProxy = 4331907A169514B500DE73A9 /* PBXContainerItemProxy */;
+		};
+		4331907D169514B500DE73A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = load_osxfuse;
+			targetProxy = 4331907C169514B500DE73A9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4397693A1693A377001B7C4A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4397693B1693A377001B7C4A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91C808733DAC0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_MACFUSE_MODE = 1;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OSXFUSE_NAME = osxfuse;
+				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				STRIPFLAGS = "-x";
+			};
+			name = Debug;
+		};
+		1DEB91C908733DAC0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				ENABLE_MACFUSE_MODE = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OSXFUSE_NAME = osxfuse;
+				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				SEPARATE_STRIP = YES;
+				STRIPFLAGS = "-x";
+			};
+			name = Release;
+		};
+		4397693F1693A377001B7C4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "osxfusefs/osxfusefs-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/osxfusefs-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(OSXFUSE_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = fs;
+			};
+			name = Debug;
+		};
+		439769401693A377001B7C4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "osxfusefs/osxfusefs-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/osxfusefs-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = "$(OSXFUSE_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = fs;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "osxfusefs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91C808733DAC0010E9CD /* Debug */,
+				1DEB91C908733DAC0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4397693E1693A377001B7C4A /* Build configuration list for PBXNativeTarget "osxfuse.fs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4397693F1693A377001B7C4A /* Debug */,
+				439769401693A377001B7C4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}

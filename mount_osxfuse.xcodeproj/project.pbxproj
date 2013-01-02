@@ -1,0 +1,295 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		540966630C33B60B00F5E227 /* getmntopts.c in Sources */ = {isa = PBXBuildFile; fileRef = 5409665F0C33B60B00F5E227 /* getmntopts.c */; };
+		540966650C33B60B00F5E227 /* mount_osxfuse.c in Sources */ = {isa = PBXBuildFile; fileRef = 540966620C33B60B00F5E227 /* mount_osxfuse.c */; };
+		540966950C33B99A00F5E227 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 541780C00B6413CA003DE6C0 /* CoreFoundation.framework */; };
+		540966990C33B9A300F5E227 /* DiskArbitration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		433E5DC413B2D1B300A523B2 /* mount_osxfuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mount_osxfuse; sourceTree = BUILT_PRODUCTS_DIR; };
+		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
+		540966530C33B5F500F5E227 /* fuse_mount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_mount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		540966540C33B5F500F5E227 /* fuse_param.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_param.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		540966550C33B5F500F5E227 /* fuse_version.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_version.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		5409665F0C33B60B00F5E227 /* getmntopts.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = getmntopts.c; sourceTree = "<group>"; };
+		540966610C33B60B00F5E227 /* mntopts.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = mntopts.h; sourceTree = "<group>"; };
+		540966620C33B60B00F5E227 /* mount_osxfuse.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = mount_osxfuse.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		541780C00B6413CA003DE6C0 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiskArbitration.framework; path = /System/Library/Frameworks/DiskArbitration.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		540966150C33B4CB00F5E227 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				540966950C33B99A00F5E227 /* CoreFoundation.framework in Frameworks */,
+				540966990C33B9A300F5E227 /* DiskArbitration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* fusefs */ = {
+			isa = PBXGroup;
+			children = (
+				540966510C33B5F500F5E227 /* Common */,
+				5409665E0C33B60B00F5E227 /* mount_osxfusefs */,
+				5409662C0C33B54300F5E227 /* Frameworks */,
+				433E5DC813B2D21900A523B2 /* Products */,
+			);
+			name = fusefs;
+			sourceTree = "<group>";
+		};
+		433E5DC813B2D21900A523B2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				433E5DC413B2D1B300A523B2 /* mount_osxfuse */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5409662C0C33B54300F5E227 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				541780C00B6413CA003DE6C0 /* CoreFoundation.framework */,
+				54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		540966510C33B5F500F5E227 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				540966520C33B5F500F5E227 /* fuse_ioctl.h */,
+				540966530C33B5F500F5E227 /* fuse_mount.h */,
+				540966540C33B5F500F5E227 /* fuse_param.h */,
+				540966550C33B5F500F5E227 /* fuse_version.h */,
+			);
+			name = Common;
+			path = ../common;
+			sourceTree = "<group>";
+		};
+		5409665E0C33B60B00F5E227 /* mount_osxfusefs */ = {
+			isa = PBXGroup;
+			children = (
+				5409665F0C33B60B00F5E227 /* getmntopts.c */,
+				540966610C33B60B00F5E227 /* mntopts.h */,
+				540966620C33B60B00F5E227 /* mount_osxfuse.c */,
+			);
+			name = mount_osxfusefs;
+			path = mount_osxfuse;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		540966160C33B4CB00F5E227 /* mount_osxfuse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 540966210C33B4F800F5E227 /* Build configuration list for PBXNativeTarget "mount_osxfuse" */;
+			buildPhases = (
+				540966140C33B4CB00F5E227 /* Sources */,
+				540966150C33B4CB00F5E227 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			comments = "Command-line utility that mounts MacFUSE file systems";
+			dependencies = (
+			);
+			name = mount_osxfuse;
+			productName = mount_fusefs;
+			productReference = 433E5DC413B2D1B300A523B2 /* mount_osxfuse */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "mount_osxfuse" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 089C166AFE841209C02AAC07 /* fusefs */;
+			productRefGroup = 089C166AFE841209C02AAC07 /* fusefs */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				540966160C33B4CB00F5E227 /* mount_osxfuse */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		540966140C33B4CB00F5E227 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				540966630C33B60B00F5E227 /* getmntopts.c in Sources */,
+				540966650C33B60B00F5E227 /* mount_osxfuse.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB91C808733DAC0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_MACFUSE_MODE = 1;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OSXFUSE_NAME = osxfuse;
+				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				STRIPFLAGS = "-x";
+			};
+			name = Debug;
+		};
+		1DEB91C908733DAC0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				ENABLE_MACFUSE_MODE = 1;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OSXFUSE_NAME = osxfuse;
+				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				SEPARATE_STRIP = YES;
+				STRIPFLAGS = "-x";
+			};
+			name = Release;
+		};
+		540966220C33B4F800F5E227 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
+				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				INSTALL_PATH = "$(HOME)/bin";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		540966230C33B4F800F5E227 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
+				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				INSTALL_PATH = "$(HOME)/bin";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "mount_osxfuse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB91C808733DAC0010E9CD /* Debug */,
+				1DEB91C908733DAC0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		540966210C33B4F800F5E227 /* Build configuration list for PBXNativeTarget "mount_osxfuse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				540966220C33B4F800F5E227 /* Debug */,
+				540966230C33B4F800F5E227 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}
