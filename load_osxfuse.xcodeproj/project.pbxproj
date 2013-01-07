@@ -220,7 +220,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 			};
 			name = Debug;
 		};
@@ -254,7 +254,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 			};
 			name = Release;
 		};
