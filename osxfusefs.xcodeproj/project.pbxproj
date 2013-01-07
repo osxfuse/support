@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4331907E169514D500DE73A9 /* load_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190751695145C00DE73A9 /* load_osxfuse */; };
 		4331907F169514D900DE73A9 /* mount_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190781695145C00DE73A9 /* mount_osxfuse */; };
-		4397693C1693A377001B7C4A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4397693A1693A377001B7C4A /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,7 +49,6 @@
 		437FB63015E1798100CFF17A /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		439769351693A377001B7C4A /* osxfuse.fs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = osxfuse.fs; sourceTree = BUILT_PRODUCTS_DIR; };
 		439769391693A377001B7C4A /* osxfusefs-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-Info.plist"; sourceTree = "<group>"; };
-		4397693B1693A377001B7C4A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4397693D1693A377001B7C4A /* osxfusefs-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "osxfusefs-Prefix.pch"; sourceTree = "<group>"; };
 		439769481693A8B2001B7C4A /* osxfusefs-version.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-version.plist"; sourceTree = "<group>"; };
 		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
@@ -113,7 +111,6 @@
 			children = (
 				439769391693A377001B7C4A /* osxfusefs-Info.plist */,
 				439769481693A8B2001B7C4A /* osxfusefs-version.plist */,
-				4397693A1693A377001B7C4A /* InfoPlist.strings */,
 				4397693D1693A377001B7C4A /* osxfusefs-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -222,7 +219,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4397693C1693A377001B7C4A /* InfoPlist.strings in Resources */,
 				4331907E169514D500DE73A9 /* load_osxfuse in Resources */,
 				4331907F169514D900DE73A9 /* mount_osxfuse in Resources */,
 			);
@@ -277,17 +273,6 @@
 			targetProxy = 4331907C169514B500DE73A9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		4397693A1693A377001B7C4A /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4397693B1693A377001B7C4A /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB91C808733DAC0010E9CD /* Debug */ = {
