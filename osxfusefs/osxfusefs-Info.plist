@@ -12,7 +12,7 @@
 	<key>CFBundleName</key>
 	<string>OSXFUSE_NAME_LITERAL</string>
 	<key>CFBundlePackageType</key>
-	<string>fs</string>
+	<string>fs  </string>
 	<key>CFBundleShortVersionString</key>
 	<string>OSXFUSE_VERSION_LITERAL</string>
 	<key>CFBundleSignature</key>
