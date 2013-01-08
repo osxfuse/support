@@ -895,7 +895,7 @@ main(int argc, char **argv)
     args.random         = drandom;
 
     char *daemon_name = NULL;
-    char *daemon_path = getenv("MOUNT_FUSEFS_DAEMON_PATH");
+    char *daemon_path = getenv("MOUNT_OSXFUSE_DAEMON_PATH");
     if (daemon_path) {
         daemon_name = basename(daemon_path);
     }
