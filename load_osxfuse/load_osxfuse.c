@@ -44,7 +44,19 @@
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
 #  include <CoreFoundation/CoreFoundation.h>
 #  include <IOKit/kext/KextManager.h>
-#endif
+#else /* MAC_OS_X_VERSION_MAX_ALLOWED < 1060 */
+   // Declare prototypes introduced in OS X 10.6
+#  include <libkern/OSReturn.h>
+
+   extern OSReturn KextManagerLoadKextWithURL(CFURLRef kextURL, CFArrayRef dependencyKextAndFolderURLs) __attribute__((weak_import));
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 1060 */
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
+   // Declare prototypes introduced in OS X 10.7
+#  include <libkern/OSReturn.h>
+
+   extern OSReturn KextManagerUnloadKextWithIdentifier(CFStringRef kextIdentifier) __attribute__((weak_import));
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED < 1070 */
 
 
 #if OSXFUSE_ENABLE_MACFUSE_MODE
@@ -52,12 +64,81 @@
 #endif
 
 
+static Boolean
+GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVersionBugfix)
+{
+    Boolean retval = true;
+    
+    CFURLRef fileURL;
+    CFDataRef resourceData;
+    SInt32 errorCode;
+    
+    CFPropertyListRef propertyList = NULL;
+    CFStringRef productVersion;
+    CFArrayRef productVersionComponents = NULL;
+    CFIndex count;
+    
+    fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
+                                            CFSTR("/System/Library/CoreServices/SystemVersion.plist"),
+                                            kCFURLPOSIXPathStyle, false);
+    retval = CFURLCreateDataAndPropertiesFromResource(kCFAllocatorDefault, fileURL, &resourceData, NULL, NULL, &errorCode);
+    CFRelease(fileURL);
+    if (!retval) {
+        goto out;
+    }
+    
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
+    // Note: This function will be deprecated soon.
+    propertyList = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL);
+#else
+    propertyList = CFPropertyListCreateWithData (kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL, NULL);
+#endif
+    CFRelease(resourceData);
+    if (!propertyList) {
+        retval = false;
+        goto out;
+    }
+    
+    // Get value of property ProductVersion
+    productVersion = CFDictionaryGetValue(propertyList, CFSTR("ProductVersion"));
+    if (!productVersion) {
+        retval = false;
+        goto out;
+    }
+    
+    productVersionComponents = CFStringCreateArrayBySeparatingStrings(kCFAllocatorDefault, productVersion, CFSTR("."));
+    if (!productVersionComponents || (count = CFArrayGetCount(productVersionComponents)) < 3) {
+        retval = false;
+        goto out;
+    }
+    
+    if (systemVersionMajor) {
+        *systemVersionMajor = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 0));
+    }
+    if (systemVersionMinor) {
+        *systemVersionMinor = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 1));
+    }
+    if (systemVersionBugfix) {
+        *systemVersionBugfix = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 2));
+    }
+    
+out:
+    if (propertyList) {
+        CFRelease(propertyList);
+    }
+    if (productVersionComponents) {
+        CFRelease(productVersionComponents);
+    }
+    
+    return retval;
+}
+
 int
 main(__unused int argc, __unused const char *argv[])
 {
-    int    result = -1;
-    SInt32 system_version_major;
-    SInt32 system_version_minor;
+    int result = -1;
+    int system_version_major = -1;
+    int system_version_minor = -1;
 
     struct vfsconf vfc = { 0 };
 
@@ -70,8 +151,7 @@ main(__unused int argc, __unused const char *argv[])
 
     char *kext_path = NULL;
 
-    if ((Gestalt(gestaltSystemVersionMajor, &system_version_major) != noErr) ||
-        (Gestalt(gestaltSystemVersionMinor, &system_version_minor) != noErr)) {
+    if (!GetSystemVersion(&system_version_major, &system_version_minor, NULL)) {
         /*
          * In order to load the correct kernel extension we need to determine
          * the version of Mac OS X. Since we cannot figure out which version is
@@ -112,14 +192,11 @@ main(__unused int argc, __unused const char *argv[])
      * extension.
      */
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
     if (KextManagerUnloadKextWithIdentifier != NULL) {
         /* Use KextManager to unload kernel extension */
         result = KextManagerUnloadKextWithIdentifier(
                      CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
-    } else
-#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 */
-    {
+    } else {
         /*
          * KextManager is not available on Mac OS X versions prior to 10.6. We
          * need to fall back to calling kextunload directly.
@@ -161,7 +238,6 @@ load_kext:
         goto out;
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
     if (KextManagerLoadKextWithURL != NULL) {
         /* Use KextManager to load kernel extension */
         CFStringRef km_path;
@@ -175,9 +251,7 @@ load_kext:
 
         CFRelease(km_path);
         CFRelease(km_url);
-    } else
-#endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 1060 */
-    {
+    } else {
         /*
          * KextManager is not available on Mac OS X versions prior to 10.6. We
          * need to fall back to calling kextload directly.
