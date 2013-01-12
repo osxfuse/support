@@ -806,14 +806,11 @@ main(int argc, char **argv)
         errx(EX_OSFILE, "cannot stat the mount point %s", mntpath);
     }
 
-    if ((strlen(statfsb.f_fstypename) == strlen(OSXFUSE_FS_TYPE)) &&
-        (strcmp(statfsb.f_fstypename, OSXFUSE_FS_TYPE) == 0)) {
-        if (!(altflags & FUSE_MOPT_ALLOW_RECURSION)) {
-            errx(EX_USAGE,
-                 "mount point %s is itself on a OSXFUSE volume", mntpath);
-        }
-    } if (strncmp(statfsb.f_fstypename, FUSE_FSTYPENAME_PREFIX,
-                  strlen(FUSE_FSTYPENAME_PREFIX)) == 0) {
+    if (((strlen(statfsb.f_fstypename) == strlen(OSXFUSE_FS_TYPE)) &&
+         (strcmp(statfsb.f_fstypename, OSXFUSE_FS_TYPE) == 0)) ||
+        ((strlen(OSXFUSE_FSTYPENAME_PREFIX) > 0) &&
+         (strncmp(statfsb.f_fstypename, OSXFUSE_FSTYPENAME_PREFIX,
+                  strlen(OSXFUSE_FSTYPENAME_PREFIX)) == 0))) {
         if (!(altflags & FUSE_MOPT_ALLOW_RECURSION)) {
             errx(EX_USAGE,
                  "mount point %s is itself on a OSXFUSE volume", mntpath);
