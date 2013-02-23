@@ -64,7 +64,6 @@ struct mntopt mopts[] = {
     { "fsname=",             0, FUSE_MOPT_FSNAME,                 1 }, // kused
     { "fssubtype=",          0, FUSE_MOPT_FSSUBTYPE,              1 }, // kused
     { "fstypename=",         0, FUSE_MOPT_FSTYPENAME,             1 }, // kused
-    { "init_timeout=",       0, FUSE_MOPT_INIT_TIMEOUT,           1 }, // kused
     { "iosize=",             0, FUSE_MOPT_IOSIZE,                 1 }, // kused
     { "jail_symlinks",       0, FUSE_MOPT_JAIL_SYMLINKS,          1 }, // kused
     { "local",               0, FUSE_MOPT_LOCALVOL,               1 }, // kused
@@ -337,7 +336,6 @@ static uintptr_t fsid           = 0;
 static char     *fsname         = NULL;
 static uintptr_t fssubtype      = 0;
 static char     *fstypename     = NULL;
-static uintptr_t init_timeout   = FUSE_DEFAULT_INIT_TIMEOUT;
 static uintptr_t iosize         = FUSE_DEFAULT_IOSIZE;
 static uint32_t  drandom        = 0;
 static char     *volname        = NULL;
@@ -378,15 +376,6 @@ struct mntval mvals[] = {
         NULL,
         (void **)&fsname,
         "invalid value for argument fsname"
-    },
-    {
-        FUSE_MOPT_INIT_TIMEOUT,
-        NULL,
-        0,
-        fuse_to_uint32,
-        (void *)FUSE_DEFAULT_INIT_TIMEOUT,
-        (void **)&init_timeout,
-        "invalid value for argument init_timeout"
     },
     {
         FUSE_MOPT_IOSIZE,
@@ -868,14 +857,6 @@ main(int argc, char **argv)
         daemon_timeout = FUSE_MAX_DAEMON_TIMEOUT;
     }
 
-    if (init_timeout < FUSE_MIN_INIT_TIMEOUT) {
-        init_timeout = FUSE_MIN_INIT_TIMEOUT;
-    }
-
-    if (init_timeout > FUSE_MAX_INIT_TIMEOUT) {
-        init_timeout = FUSE_MAX_INIT_TIMEOUT;
-    }
-
     result = ioctl(fd, FUSEDEVIOCGETRANDOM, &drandom);
     if (result) {
         errx(EX_UNAVAILABLE, "failed to negotiate with /dev/"
@@ -887,7 +868,6 @@ main(int argc, char **argv)
     args.daemon_timeout = (uint32_t) daemon_timeout;
     args.fsid           = (uint32_t) fsid;
     args.fssubtype      = (uint32_t) fssubtype;
-    args.init_timeout   = (uint32_t) init_timeout;
     args.iosize         = (uint32_t) iosize;
     args.random         = drandom;
 
