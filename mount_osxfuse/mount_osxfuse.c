@@ -490,17 +490,16 @@ post_notification(const osxfuse_notification_t  notification,
         object = CFStringCreateWithCString(kCFAllocatorDefault,
                                            macfuse_notification_object,
                                            kCFStringEncodingUTF8);
-    } else {
-#endif
+    } else
+#endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
+    {
         name   = CFStringCreateWithCString(kCFAllocatorDefault,
                                            osxfuse_notification_names[notification],
                                            kCFStringEncodingUTF8);
         object = CFStringCreateWithCString(kCFAllocatorDefault,
                                            osxfuse_notification_object,
                                            kCFStringEncodingUTF8);
-#if OSXFUSE_ENABLE_MACFUSE_MODE
     }
-#endif
 
     if (!name || !object) goto out;
     if (dict_count == 0)  goto post;
