@@ -162,7 +162,7 @@ case "$OS_RELEASE" in
   9*)
     BOMFILE="$INSTALL_VOLUME/Library/Receipts/boms/com.google.macfuse.core.bom"
     ;;
-  10*|11*|12*)
+  10*|11*|12*|13*)
     BOMFILE="$INSTALL_VOLUME/var/db/receipts/com.google.macfuse.core.bom"
     ;;
 esac
