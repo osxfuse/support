@@ -63,21 +63,23 @@
 #  define OSXFUSE_MACFUSE_MODE_ENV  "OSXFUSE_MACFUSE_MODE"
 #endif
 
+#define KLVersionComponentGetInt(components, count, index) \
+    ((index) < (count) ? CFStringGetIntValue(CFArrayGetValueAtIndex((components), (index))) : 0)
 
 static Boolean
 GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVersionBugfix)
 {
     Boolean retval = true;
-    
+
     CFURLRef fileURL;
     CFDataRef resourceData;
     SInt32 errorCode;
-    
+
     CFPropertyListRef propertyList = NULL;
     CFStringRef productVersion;
     CFArrayRef productVersionComponents = NULL;
     CFIndex count;
-    
+
     fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
                                             CFSTR("/System/Library/CoreServices/SystemVersion.plist"),
                                             kCFURLPOSIXPathStyle, false);
@@ -86,42 +88,43 @@ GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVe
     if (!retval) {
         goto out;
     }
-    
+
 #if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
     // Note: This function will be deprecated soon.
     propertyList = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL);
 #else
-    propertyList = CFPropertyListCreateWithData (kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL, NULL);
+    propertyList = CFPropertyListCreateWithData(kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL, NULL);
 #endif
     CFRelease(resourceData);
     if (!propertyList) {
         retval = false;
         goto out;
     }
-    
+
     // Get value of property ProductVersion
     productVersion = CFDictionaryGetValue(propertyList, CFSTR("ProductVersion"));
     if (!productVersion) {
         retval = false;
         goto out;
     }
-    
+
     productVersionComponents = CFStringCreateArrayBySeparatingStrings(kCFAllocatorDefault, productVersion, CFSTR("."));
-    if (!productVersionComponents || (count = CFArrayGetCount(productVersionComponents)) < 3) {
+    if (!productVersionComponents) {
         retval = false;
         goto out;
     }
-    
+    count = CFArrayGetCount(productVersionComponents);
+
     if (systemVersionMajor) {
-        *systemVersionMajor = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 0));
+        *systemVersionMajor = KLVersionComponentGetInt(productVersionComponents, count, 0);
     }
     if (systemVersionMinor) {
-        *systemVersionMinor = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 1));
+        *systemVersionMinor = KLVersionComponentGetInt(productVersionComponents, count, 1);
     }
     if (systemVersionBugfix) {
-        *systemVersionBugfix = (int)CFStringGetIntValue(CFArrayGetValueAtIndex(productVersionComponents, 2));
+        *systemVersionBugfix = KLVersionComponentGetInt(productVersionComponents, count, 2);
     }
-    
+
 out:
     if (propertyList) {
         CFRelease(propertyList);
@@ -129,7 +132,7 @@ out:
     if (productVersionComponents) {
         CFRelease(productVersionComponents);
     }
-    
+
     return retval;
 }
 
