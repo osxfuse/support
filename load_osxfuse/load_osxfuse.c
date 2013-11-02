@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2006-2008 Amit Singh/Google Inc.
- * Copyright (c) 2011-2012 Benjamin Fleischer
+ * Copyright (c) 2011-2013 Benjamin Fleischer
  * All rights reserved.
  */
 
@@ -42,25 +42,23 @@
 #include <CoreServices/CoreServices.h>
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
-#  include <CoreFoundation/CoreFoundation.h>
-#  include <IOKit/kext/KextManager.h>
-#else /* MAC_OS_X_VERSION_MAX_ALLOWED < 1060 */
-   // Declare prototypes introduced in OS X 10.6
-#  include <libkern/OSReturn.h>
+    #include <CoreFoundation/CoreFoundation.h>
+    #include <IOKit/kext/KextManager.h>
 
-   extern OSReturn KextManagerLoadKextWithURL(CFURLRef kextURL, CFArrayRef dependencyKextAndFolderURLs) __attribute__((weak_import));
+#else /* MAC_OS_X_VERSION_MAX_ALLOWED < 1060 */
+    // Declare prototypes introduced in OS X 10.6
+    #include <libkern/OSReturn.h>
+    extern OSReturn KextManagerLoadKextWithURL(CFURLRef kextURL, CFArrayRef dependencyKextAndFolderURLs) __attribute__((weak_import));
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED >= 1060 */
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
-   // Declare prototypes introduced in OS X 10.7
-#  include <libkern/OSReturn.h>
-
-   extern OSReturn KextManagerUnloadKextWithIdentifier(CFStringRef kextIdentifier) __attribute__((weak_import));
+    // Declare prototypes introduced in OS X 10.7
+    #include <libkern/OSReturn.h>
+    extern OSReturn KextManagerUnloadKextWithIdentifier(CFStringRef kextIdentifier) __attribute__((weak_import));
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED < 1070 */
 
-
 #if OSXFUSE_ENABLE_MACFUSE_MODE
-#  define OSXFUSE_MACFUSE_MODE_ENV  "OSXFUSE_MACFUSE_MODE"
+    #define OSXFUSE_MACFUSE_MODE_ENV  "OSXFUSE_MACFUSE_MODE"
 #endif
 
 #define KLVersionComponentGetInt(components, count, index) \
@@ -166,12 +164,12 @@ main(__unused int argc, __unused const char *argv[])
 
     result = getvfsbyname(OSXFUSE_FS_TYPE, &vfc);
     if (result) {
-        /* osxfusefs kernel extension is not already loaded. */
+        // osxfuse kernel extension is not already loaded.
         result = -1;
         goto load_kext;
     }
 
-    /* Some version of osxfusefs is already loaded. Let us check it out. */
+    // Some version of osxfusefs is already loaded. Let us check it out.
 
     result = sysctlbyname(SYSCTL_OSXFUSE_VERSION_NUMBER, version,
                           &version_len, NULL, (size_t)0);
@@ -180,12 +178,12 @@ main(__unused int argc, __unused const char *argv[])
         goto out;
     }
 
-    /* sysctlbyname includes the trailing '\0' in version_len */
+    // sysctlbyname includes the trailing '\0' in version_len
     version_len_desired = strlen(OSXFUSE_VERSION) + 1;
 
     if ((version_len == version_len_desired) &&
         !strncmp(OSXFUSE_VERSION, version, version_len)) {
-        /* Currently loaded kernel extension is good */
+        // Currently loaded kernel extension is good
         result = 0;
         goto kext_loaded;
     }
@@ -196,7 +194,7 @@ main(__unused int argc, __unused const char *argv[])
      */
 
     if (KextManagerUnloadKextWithIdentifier != NULL) {
-        /* Use KextManager to unload kernel extension */
+        // Use KextManager to unload kernel extension
         result = KextManagerUnloadKextWithIdentifier(
                      CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
     } else {
@@ -208,7 +206,7 @@ main(__unused int argc, __unused const char *argv[])
         if (pid == 0) {
             result = execl(SYSTEM_KEXTUNLOAD, SYSTEM_KEXTUNLOAD, "-b",
                            OSXFUSE_BUNDLE_IDENTIFIER, NULL);
-            /* We can only get here if the exec failed */
+            // We can only get here if the exec failed
             goto out;
         }
 
@@ -225,12 +223,12 @@ main(__unused int argc, __unused const char *argv[])
     }
 
     if (result != 0) {
-        /* Unloading failed */
+        // Unloading failed
         result = EBUSY;
         goto out;
     }
 
-    /* Unloading succeeded. Now load the on-disk version. */
+    // Unloading succeeded. Now load the on-disk version.
 
 load_kext:
     result = asprintf(&kext_path, "%s/%ld.%ld/%s", OSXFUSE_RESOURCES_PATH,
@@ -263,7 +261,7 @@ load_kext:
         if (pid == 0) {
             result = execl(SYSTEM_KEXTLOAD, SYSTEM_KEXTLOAD, kext_path, NULL);
 
-            /* We can only get here if the exec failed */
+            // We can only get here if the exec failed
             goto out;
         }
 
@@ -279,7 +277,7 @@ load_kext:
         }
     }
 
-    /* Now do any kext-load-time settings we need to do as root */
+    // Now do any kext-load-time settings we need to do as root
 
     if (result == 0) {
         int admin_gid = 0;
@@ -289,7 +287,7 @@ load_kext:
         }
         admin_gid = admin_group->gr_gid;
 
-        /* If this fails, we don't care */
+        // If this fails, we don't care
         (void)sysctlbyname(SYSCTL_OSXFUSE_TUNABLES_ADMIN, NULL, NULL,
                           &admin_gid, sizeof(admin_gid));
     }
@@ -300,7 +298,7 @@ kext_loaded:
         char *env_value;
         env_value = getenv(OSXFUSE_MACFUSE_MODE_ENV);
         if (env_value != NULL && strcmp(env_value, "1") == 0) {
-            /* Enable MacFUSE mode of kernel extension */
+            // Enable MacFUSE mode of kernel extension
             int32_t enabled = 1;
             size_t  length = 4;
 
@@ -308,7 +306,7 @@ kext_loaded:
                                length);
         }
     }
-#endif
+#endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
 
 out:
     if (kext_path) {

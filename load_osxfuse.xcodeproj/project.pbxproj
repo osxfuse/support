@@ -114,6 +114,8 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "load_osxfuse" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -220,7 +222,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-Wl,-flat_namespace,-undefined,dynamic_lookup";
+				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 			};
 			name = Debug;
@@ -255,7 +257,7 @@
 				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-Wl,-flat_namespace,-undefined,dynamic_lookup";
+				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 			};
 			name = Release;
