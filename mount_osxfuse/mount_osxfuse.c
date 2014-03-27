@@ -898,12 +898,21 @@ main(int argc, char **argv)
     }
 
     if (!volname) {
+        #if __clang__
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wformat-extra-args"
+        #endif
+
         if (daemon_name) {
-            snprintf(args.volname, MAXPATHLEN, "OSXFUSE Volume %d (%s)",
+            snprintf(args.volname, MAXPATHLEN, OSXFUSE_VOLNAME_FORMAT_DAEMON,
                      dindex, daemon_name);
         } else {
-            snprintf(args.volname, MAXPATHLEN, "OSXFUSE Volume %d", dindex);
+            snprintf(args.volname, MAXPATHLEN, OSXFUSE_VOLNAME_FORMAT, dindex);
         }
+
+        #if __clang__
+            #pragma clang diagnostic pop
+        #endif
     } else {
         snprintf(args.volname, MAXPATHLEN, "%s", volname);
     }
