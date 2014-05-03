@@ -115,6 +115,8 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "mount_osxfuse" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -152,7 +154,6 @@
 		1DEB91C808733DAC0010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_MACFUSE_MODE = 1;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -163,9 +164,9 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_PREPROCESS = YES;
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OSXFUSE_NAME = osxfuse;
 				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				SDKROOT = macosx;
 				STRIPFLAGS = "-x";
 			};
 			name = Debug;
@@ -173,7 +174,6 @@
 		1DEB91C908733DAC0010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				ENABLE_MACFUSE_MODE = 1;
@@ -184,9 +184,9 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_PREPROCESS = YES;
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OSXFUSE_NAME = osxfuse;
 				OTHER_CFLAGS = "-DOSXFUSE_ENABLE_MACFUSE_MODE=$(ENABLE_MACFUSE_MODE)";
+				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIPFLAGS = "-x";
 			};
