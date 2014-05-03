@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2006-2008 Amit Singh/Google Inc.
- * Copyright (c) 2011-2013 Benjamin Fleischer
+ * Copyright (c) 2011-2014 Benjamin Fleischer
  * All rights reserved.
  */
 
@@ -70,10 +70,11 @@ GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVe
     Boolean retval = true;
 
     CFURLRef fileURL;
-    CFDataRef resourceData;
-    SInt32 errorCode;
+    CFReadStreamRef fileStream;
 
+    CFPropertyListFormat propertyListFormat;
     CFPropertyListRef propertyList = NULL;
+
     CFStringRef productVersion;
     CFArrayRef productVersionComponents = NULL;
     CFIndex count;
@@ -81,19 +82,38 @@ GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVe
     fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
                                             CFSTR("/System/Library/CoreServices/SystemVersion.plist"),
                                             kCFURLPOSIXPathStyle, false);
-    retval = CFURLCreateDataAndPropertiesFromResource(kCFAllocatorDefault, fileURL, &resourceData, NULL, NULL, &errorCode);
+    fileStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, fileURL);
     CFRelease(fileURL);
-    if (!retval) {
+
+    if (!fileStream) {
+        goto out;
+    }
+
+    if (!CFReadStreamOpen(fileStream)) {
+        CFRelease(fileStream);
         goto out;
     }
 
 #if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
     // Note: This function will be deprecated soon.
-    propertyList = CFPropertyListCreateFromXMLData(kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL);
+    propertyList = CFPropertyListCreateFromStream(kCFAllocatorDefault,
+                                                  fileStream,
+                                                  0,
+                                                  kCFPropertyListImmutable,
+                                                  &propertyListFormat,
+                                                  NULL);
 #else
-    propertyList = CFPropertyListCreateWithData(kCFAllocatorDefault, resourceData, kCFPropertyListImmutable, NULL, NULL);
+    propertyList = CFPropertyListCreateWithStream(kCFAllocatorDefault,
+                                                  fileStream,
+                                                  0,
+                                                  kCFPropertyListImmutable,
+                                                  &propertyListFormat,
+                                                  NULL);
 #endif
-    CFRelease(resourceData);
+
+    CFReadStreamClose(fileStream);
+    CFRelease(fileStream);
+
     if (!propertyList) {
         retval = false;
         goto out;
@@ -106,7 +126,9 @@ GetSystemVersion(int *systemVersionMajor, int *systemVersionMinor, int *systemVe
         goto out;
     }
 
-    productVersionComponents = CFStringCreateArrayBySeparatingStrings(kCFAllocatorDefault, productVersion, CFSTR("."));
+    productVersionComponents = CFStringCreateArrayBySeparatingStrings(kCFAllocatorDefault,
+                                                                      productVersion,
+                                                                      CFSTR("."));
     if (!productVersionComponents) {
         retval = false;
         goto out;
@@ -165,7 +187,6 @@ main(__unused int argc, __unused const char *argv[])
     result = getvfsbyname(OSXFUSE_FS_TYPE, &vfc);
     if (result) {
         // osxfuse kernel extension is not already loaded.
-        result = -1;
         goto load_kext;
     }
 
@@ -289,7 +310,7 @@ load_kext:
 
         // If this fails, we don't care
         (void)sysctlbyname(SYSCTL_OSXFUSE_TUNABLES_ADMIN, NULL, NULL,
-                          &admin_gid, sizeof(admin_gid));
+                           &admin_gid, sizeof(admin_gid));
     }
 
 kext_loaded:
