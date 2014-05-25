@@ -1,0 +1,29 @@
+#!/bin/bash
+
+FSBUNDLE_PATH="/Library/Filesystems/fusefs.fs"
+PREFPANE_PATH="/Library/PreferencePanes/MacFUSE.prefPane"
+PREFERENCES_PATH="/Library/Preferences/com.google.macfuse.plist"
+
+KEXT_IDENTIFIER="com.google.filesystems.fusefs"
+PACKAGE_IDENTIFIER="com.google.macfuse"
+
+if [[ ! -d "${FSBUNDLE_PATH}" ]]
+then
+    exit 0
+fi
+
+# Unload MacFUSE kernel extension
+
+if [[ -n "`/usr/sbin/kextstat -l -b "${KEXT_IDENTIFIER}"`" ]]
+then
+    /sbin/kextunload -b "${KEXT_IDENTIFIER}"
+fi
+
+# Remove MacFUSE
+
+/bin/rm -rf "${PREFPANE_PATH}" > /dev/null 2>&1
+/bin/rm -f "${PREFERENCES_PATH}" > /dev/null 2>&1
+
+/usr/sbin/pkgutil --forget "${PACKAGE_IDENTIFIER}"
+
+exit 0

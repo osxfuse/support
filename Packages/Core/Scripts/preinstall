@@ -1,0 +1,12 @@
+#!/bin/bash
+
+KEXT_IDENTIFIER="com.github.osxfuse.filesystems.osxfuse"
+
+# Unload osxfuse kernel extension
+
+if [[ -n "`/usr/sbin/kextstat -l -b "${KEXT_IDENTIFIER}"`" ]]
+then
+    /sbin/kextunload -b "${KEXT_IDENTIFIER}"
+fi
+
+exit 0

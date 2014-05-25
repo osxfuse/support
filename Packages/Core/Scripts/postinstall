@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 # Make sure /usr/local/include and /usr/local/lib are world-readable
+
 chmod u+rx,g+rx,o+rx "/usr/local/include"
 chmod u+rx,g+rx,o+rx "/usr/local/lib"
 
