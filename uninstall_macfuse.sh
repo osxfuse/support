@@ -160,10 +160,10 @@ fi
 OS_RELEASE=`/usr/bin/uname -r`
 case "$OS_RELEASE" in 
   9*)
-    BOMFILE="$INSTALL_VOLUME/Library/Receipts/boms/com.google.macfuse.core.bom"
+    BOMFILE="$INSTALL_VOLUME/Library/Receipts/boms/com.github.osxfuse.pkg.MacFUSE.bom"
     ;;
-  10*|11*|12*|13*)
-    BOMFILE="$INSTALL_VOLUME/var/db/receipts/com.google.macfuse.core.bom"
+  10*|11*|12*|13*|14*)
+    BOMFILE="$INSTALL_VOLUME/var/db/receipts/com.github.osxfuse.pkg.MacFUSE.bom"
     ;;
 esac
 
