@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2006 Google. All Rights Reserved.
 #
-# Uninstalls the "MacFUSE Core.pkg".
+# Uninstalls the "MacFUSE.pkg".
 
 INSTALL_VOLUME="/"
 
@@ -35,9 +35,7 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./usr/local/lib/*                        |  \
     "$INSTALL_VOLUME"/./usr/local/include/*                    |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
-    "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/* |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSEMacFUSE.pkg      |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSEMacFUSE.pkg/*)
+    "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/*)
       # These are all ok to process.
       return 1;
       ;;  
@@ -174,7 +172,7 @@ if [ ! -d "$INSTALL_VOLUME" ]; then
 fi
 
 # Make sure that OSXFUSE Core is installed and the Archive.bom is present.
-/usr/sbin/pkgutil --pkg-info com.google.macfuse.core > /dev/null 2>&1
+/usr/sbin/pkgutil --pkg-info com.github.osxfuse.pkg.MacFUSE > /dev/null 2>&1
 if [ $? -ne 0 ]
 then
   log "It appears that MacFUSE Core is not installed."
@@ -215,7 +213,7 @@ IFS="$OLD_IFS"
 # 5. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
 then
-  /usr/sbin/pkgutil --forget com.google.macfuse.core
+  /usr/sbin/pkgutil --forget com.github.osxfuse.pkg.MacFUSE
   if [ $? -ne 0 ]
   then
     IS_BOTCHED_UNINSTALL=1

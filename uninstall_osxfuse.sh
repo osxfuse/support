@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2006 Google. All Rights Reserved.
 #
-# Uninstalls the "OSXFUSE Core.pkg".
+# Uninstalls the "Core.pkg".
 
 INSTALL_VOLUME="/"
 
@@ -38,12 +38,7 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./Library/Filesystems/osxfuse.fs             |  \
     "$INSTALL_VOLUME"/./Library/Filesystems/osxfuse.fs/*           |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/OSXFUSE.framework       |  \
-    "$INSTALL_VOLUME"/./Library/Frameworks/OSXFUSE.framework/*     |  \
-    "$INSTALL_VOLUME"/./Library/Application\ Support/Developer/Shared/Xcode/Project\ Templates/* |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSE.pkg                 |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSE.pkg/*               |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSECore.pkg             |  \
-    "$INSTALL_VOLUME"/Library/Receipts/OSXFUSECore.pkg/*)
+    "$INSTALL_VOLUME"/./Library/Frameworks/OSXFUSE.framework/*)
       # These are all ok to process.
       return 1;
       ;;  
