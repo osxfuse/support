@@ -252,7 +252,7 @@ main(__unused int argc, __unused const char *argv[])
     // Unloading succeeded. Now load the on-disk version.
 
 load_kext:
-    result = asprintf(&kext_path, "%s/%ld.%ld/%s", OSXFUSE_RESOURCES_PATH,
+    result = asprintf(&kext_path, "%s/%ld.%ld/%s", OSXFUSE_EXTENSIONS_PATH,
                       (long) system_version_major, (long) system_version_minor,
                       OSXFUSE_KEXT_NAME);
     if (result == -1) {
