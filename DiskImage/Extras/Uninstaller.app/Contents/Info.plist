@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>FUSE for OS X Uninstaller</string>
+	<string>Uninstaller</string>
 	<key>CFBundleDisplayName</key>
-	<string>FUSE for OS X Uninstaller</string>
+	<string>Uninstaller</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
