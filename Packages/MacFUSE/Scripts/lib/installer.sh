@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2011-2014 Benjamin Fleischer
+# Copyright (c) 2014 Benjamin Fleischer
 # All rights reserved.
 #
 # Redistribution  and  use  in  source  and  binary  forms,  with   or   without
@@ -28,14 +28,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function postinstall_main
+function installer_package_get_info
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
+    local identifier="${1}"
+    local field="${2}"
 
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
+    local info=""
+    info="`/usr/sbin/pkgutil --pkg-info "${identifier}" 2> /dev/null`"
 
-    return 0
+    if [[ ${?} -eq 0 && -n "${info}" ]]
+    then
+        /usr/bin/sed -E -n -e "s/^${field}: (.*)$/\1/p" <<< "${info}"
+    else
+        return 1
+    fi
 }
-
-postinstall_main "${@}"

@@ -30,10 +30,14 @@
 
 function postinstall_main
 {
+    # Restore link from fuse.pc to osxfuse.pc that might have been removed
+
+    /bin/ln -sf "osxfuse.pc" "/usr/local/lib/pkgconfig/fuse.pc"
+
     # Make sure /usr/local/include and /usr/local/lib are world-readable
 
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
+    /bin/chmod u+rx,g+rx,o+rx "/usr/local/include"
+    /bin/chmod u+rx,g+rx,o+rx "/usr/local/lib"
 
     return 0
 }

@@ -28,14 +28,50 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function postinstall_main
+function preinstall_main
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
+    # Source libraries
 
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
+    local library_path=""
+    for library_path in "${BASH_SOURCE[0]%/*}/lib"/*.sh
+    do
+        if [[ -f "${library_path}" ]]
+        then
+            source "${library_path}" || return 1
+        fi
+    done
+
+    common_log_initialize
+    common_signal_trap_initialize
+
+    # Uninstall previous version
+
+    local version=""
+    version="`installer_package_get_info com.google.macfuse.core version`"
+
+    if [[ ${?} -ne 0 && "`osx_get_version`" = "10.5" && -e "/Library/Receipts/MacFUSE Core.pkg" ]]
+    then
+        # Note: Mac OS X 10.4 style packages like MacFUSE are not added to the
+        # Mac OS X 10.5 installer database.
+
+        version="2.0"
+    fi
+
+    if [[ -n "${version}" ]]
+    then
+        common_assert "version_is_version `string_escape "${version}"`"
+
+        version_compare "${version}" 2.3
+        if (( ${?} ==  1 ))
+        then
+            osx_unload_kext "com.google.filesystems.fusefs"
+            osxfuse_uninstall_macfuse
+        else
+            osxfuse_uninstall_osxfuse_2_macfuse
+        fi
+    fi
 
     return 0
 }
 
-postinstall_main "${@}"
+preinstall_main "${@}"

@@ -27,15 +27,24 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN  IF  ADVISED  OF  THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Requires common.sh
 
-function postinstall_main
+
+function osx_get_version
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
-
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
-
-    return 0
+    sw_vers -productVersion | /usr/bin/cut -d . -f 1,2
 }
 
-postinstall_main "${@}"
+function osx_unload_kext
+{
+    local identifier="${1}"
+
+    common_assert "[[ -n `string_escape "${identifier}"` ]]"
+
+    if [[ -n "`/usr/sbin/kextstat -l -b "${identifier}"`" ]]
+    then
+        /sbin/kextunload -b "${identifier}"
+    else
+        return 0
+    fi
+}

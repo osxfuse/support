@@ -27,15 +27,43 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN  IF  ADVISED  OF  THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Requires common.sh
+# Requires math.sh
+# Requires string.sh
 
-function postinstall_main
+
+function version_is_version
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
-
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
-
-    return 0
+    [[ "${1}" =~ ^[0-9]+(\.[0-9]+)*$ ]]
 }
 
-postinstall_main "${@}"
+function version_compare
+{
+    common_assert "version_is_version `string_escape "${1}"`"
+    common_assert "version_is_version `string_escape "${2}"`"
+
+    local -a version1=()
+    local -a version2=()
+
+    IFS="." read -ra version1 <<< "${1}"
+    IFS="." read -ra version2 <<< "${2}"
+
+    local -i i=0
+    local    t1=""
+    local    t2=""
+    for (( i=0 ; i < `math_max ${#version1[@]} ${#version2[@]}` ; i++ ))
+    do
+        t1=${version1[${i}]:-0}
+        t2=${version2[${i}]:-0}
+
+        if (( t1 < t2 ))
+        then
+            return 1
+        fi
+        if (( t1 > t2 ))
+        then
+            return 2
+        fi
+    done
+    return 0
+}

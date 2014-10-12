@@ -28,14 +28,60 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function postinstall_main
+function string_trim
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
+    local string="${1}"
 
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
+    ! shopt -q extglob
+    local -i extglob=${?}
 
-    return 0
+    if (( extglob == 0 ))
+    then
+        shopt -s extglob
+    fi
+
+    string="${string##+([[:space:]])}"
+    string="${string%%+([[:space:]])}"
+
+    if (( extglob == 0 ))
+    then
+        shopt -u extglob
+    fi
+
+    printf "%s" "${string}"
 }
 
-postinstall_main "${@}"
+function string_lowercase
+{
+    /usr/bin/tr '[A-Z]' '[a-z]'
+}
+
+function string_uppercase
+{
+    /usr/bin/tr '[a-z]' '[A-Z]'
+}
+
+function string_escape
+{
+    local count="${2:-1}"
+
+    if [[ "${count}" =~ [0-9]+ ]] && (( count > 0 ))
+    then
+        printf "%q" "`string_escape "${1}" $(( ${count} - 1 ))`"
+    else
+        printf "%s" "${1}"
+    fi
+}
+
+function string_compare
+{
+    if [[ "${1}" < "${2}" ]]
+    then
+        return 1
+    fi
+    if [[ "${1}" > "${2}" ]]
+    then
+        return 2
+    fi 
+    return 0
+}

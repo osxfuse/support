@@ -27,15 +27,50 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN  IF  ADVISED  OF  THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Requires common.sh
+# Requires string.sh
 
-function postinstall_main
+
+function math_is_integer
 {
-    # Make sure /usr/local/include and /usr/local/lib are world-readable
+    [[ "${1}" =~ ^-?[0-9]+$ ]]
+}
 
-    chmod u+rx,g+rx,o+rx "/usr/local/include"
-    chmod u+rx,g+rx,o+rx "/usr/local/lib"
-
+function math_compare
+{
+    if (( ${1} < ${2} ))
+    then
+        return 1
+    fi
+    if (( ${1} > ${2} ))
+    then
+        return 2
+    fi 
     return 0
 }
 
-postinstall_main "${@}"
+function math_max
+{
+    common_assert "math_is_integer `string_escape "${1}"`"
+    common_assert "math_is_integer `string_escape "${2}"`"
+
+    if (( ${1} > ${2} ))
+    then
+        printf "%s" "${1}"
+    else
+        printf "%s" "${2}"
+    fi
+}
+
+function math_min
+{
+    common_assert "math_is_integer `string_escape "${1}"`"
+    common_assert "math_is_integer `string_escape "${2}"`"
+
+    if (( ${1} < ${2} ))
+    then
+        printf "%s" "${1}"
+    else
+        printf "%s" "${2}"
+    fi
+}
