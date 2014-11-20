@@ -28,40 +28,60 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function preinstall_main
+function string_trim
 {
-    # Source libraries
+    local string="${1}"
 
-    local library_path=""
-    for library_path in "${BASH_SOURCE[0]%/*}/lib"/*.sh
-    do
-        if [[ -f "${library_path}" ]]
-        then
-            source "${library_path}" || return 1
-        fi
-    done
+    ! shopt -q extglob
+    local -i extglob=${?}
 
-    common_log_initialize
-    common_signal_trap_initialize
-
-    # Uninstall previous version
-
-    local version="`installer_package_get_info com.github.osxfuse.pkg.Core version`"
-
-    if [[ -n "${version}" ]]
+    if (( extglob == 0 ))
     then
-        if version_compare_ge "${version}" 3.0.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
-
-        elif version_compare_ge "${version}" 2.3.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
-            osxfuse_uninstall_osxfuse_2_core
-        fi
+        shopt -s extglob
     fi
 
-    return 0
+    string="${string##+([[:space:]])}"
+    string="${string%%+([[:space:]])}"
+
+    if (( extglob == 0 ))
+    then
+        shopt -u extglob
+    fi
+
+    printf "%s" "${string}"
 }
 
-preinstall_main "${@}"
+function string_lowercase
+{
+    /usr/bin/tr '[A-Z]' '[a-z]'
+}
+
+function string_uppercase
+{
+    /usr/bin/tr '[a-z]' '[A-Z]'
+}
+
+function string_escape
+{
+    local count="${2:-1}"
+
+    if [[ "${count}" =~ [0-9]+ ]] && (( count > 0 ))
+    then
+        printf "%q" "`string_escape "${1}" $(( count - 1 ))`"
+    else
+        printf "%s" "${1}"
+    fi
+}
+
+function string_compare
+{
+    if [[ "${1}" < "${2}" ]]
+    then
+        return 1
+    fi
+    if [[ "${1}" > "${2}" ]]
+    then
+        return 2
+    fi 
+    return 0
+}

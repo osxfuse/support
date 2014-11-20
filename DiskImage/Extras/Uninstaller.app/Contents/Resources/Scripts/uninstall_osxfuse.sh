@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2011-2014 Benjamin Fleischer
+# Copyright (c) 2014 Benjamin Fleischer
 # All rights reserved.
 #
 # Redistribution  and  use  in  source  and  binary  forms,  with   or   without
@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function preinstall_main
+function uninstall_osxfuse_main
 {
     # Source libraries
 
@@ -44,24 +44,94 @@ function preinstall_main
     common_log_initialize
     common_signal_trap_initialize
 
-    # Uninstall previous version
+    # Uninstall core
 
-    local version="`installer_package_get_info com.github.osxfuse.pkg.Core version`"
+    local core_version="`installer_package_get_info com.github.osxfuse.pkg.Core version`"
 
-    if [[ -n "${version}" ]]
+    if [[ -z "${core_version}" ]]
     then
-        if version_compare_ge "${version}" 3.0.0
+        if [[ -e "/Library/Filesystems/osxfuse.fs" ]]
+        then
+            core_version="3.0"
+
+        elif [[ -e "/Library/Filesystems/osxfusefs.fs" ]]
+        then
+            core_version="2.3"
+        fi
+    fi
+
+    if [[ -n "${core_version}" ]]
+    then
+        if version_compare_ge "${core_version}" 3.0
         then
             osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
+            osxfuse_uninstall_osxfuse_3_core
 
-        elif version_compare_ge "${version}" 2.3.0
+        elif version_compare_ge "${core_version}" 2.3
         then
             osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
             osxfuse_uninstall_osxfuse_2_core
         fi
     fi
 
+    # Uninstall preference pane
+
+    local prefpane_version="`installer_package_get_info com.github.osxfuse.pkg.PrefPane version`"
+
+    if [[ -z "${prefpane_version}" ]]
+    then
+        if [[ -e "/Library/PreferencePanes/OSXFUSE.prefPane" ]]
+        then
+            prefpane_version="3.0"
+        fi
+    fi
+
+    if [[ -n "${prefpane_version}" ]]
+    then
+        if version_compare_ge "${prefpane_version}" 3.0
+        then
+            osxfuse_uninstall_osxfuse_3_prefpane
+
+        elif version_compare_ge "${prefpane_version}" 2.3
+        then
+            osxfuse_uninstall_osxfuse_2_prefpane
+        fi
+    fi
+
+    # Uninstall MacFUSE compatibility layer
+
+    local macfuse_version="`installer_package_get_info com.github.osxfuse.pkg.MacFUSE version`"
+
+    if [[ -z "${macfuse_version}" ]]
+    then
+        macfuse_version="`installer_package_get_info com.google.macfuse.core version`"
+    fi
+
+    if [[ -z "${macfuse_version}" ]]
+    then
+        if [[ -e /usr/local/lib/pkgconfig/macfuse.pc ]]
+        then
+            macfuse_version="3.0"
+
+        elif [[ -e /usr/local/lib/libmacfuse_i32.2.dylib ]]
+        then
+            macfuse_version="2.3"
+        fi
+    fi
+
+    if [[ -n "${macfuse_version}" ]]
+    then
+        if version_compare_ge "${macfuse_version}" 3.0
+        then
+            osxfuse_uninstall_osxfuse_3_macfuse
+
+        elif version_compare_ge "${macfuse_version}" 2.3
+        then
+            osxfuse_uninstall_osxfuse_2_macfuse
+        fi
+    fi
+
     return 0
 }
 
-preinstall_main "${@}"
+uninstall_osxfuse_main "${@}"

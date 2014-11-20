@@ -7,15 +7,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>Uninstaller</string>
+	<string>uninstall_osxfuse</string>
 	<key>CFBundleExecutable</key>
 	<string>applet</string>
-	<key>CFBundleIconFile</key>
-	<string>Uninstaller</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Uninstaller</string>
+	<string>uninstall_osxfuse</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>

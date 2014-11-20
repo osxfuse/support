@@ -27,41 +27,50 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN  IF  ADVISED  OF  THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Requires common.sh
+# Requires string.sh
 
-function preinstall_main
+
+function math_is_integer
 {
-    # Source libraries
+    [[ "${1}" =~ ^-?[0-9]+$ ]]
+}
 
-    local library_path=""
-    for library_path in "${BASH_SOURCE[0]%/*}/lib"/*.sh
-    do
-        if [[ -f "${library_path}" ]]
-        then
-            source "${library_path}" || return 1
-        fi
-    done
-
-    common_log_initialize
-    common_signal_trap_initialize
-
-    # Uninstall previous version
-
-    local version="`installer_package_get_info com.github.osxfuse.pkg.Core version`"
-
-    if [[ -n "${version}" ]]
+function math_compare
+{
+    if (( ${1} < ${2} ))
     then
-        if version_compare_ge "${version}" 3.0.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
-
-        elif version_compare_ge "${version}" 2.3.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
-            osxfuse_uninstall_osxfuse_2_core
-        fi
+        return 1
     fi
-
+    if (( ${1} > ${2} ))
+    then
+        return 2
+    fi 
     return 0
 }
 
-preinstall_main "${@}"
+function math_max
+{
+    common_assert "math_is_integer `string_escape "${1}"`"
+    common_assert "math_is_integer `string_escape "${2}"`"
+
+    if (( ${1} > ${2} ))
+    then
+        printf "%s" "${1}"
+    else
+        printf "%s" "${2}"
+    fi
+}
+
+function math_min
+{
+    common_assert "math_is_integer `string_escape "${1}"`"
+    common_assert "math_is_integer `string_escape "${2}"`"
+
+    if (( ${1} < ${2} ))
+    then
+        printf "%s" "${1}"
+    else
+        printf "%s" "${2}"
+    fi
+}

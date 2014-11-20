@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2011-2014 Benjamin Fleischer
+# Copyright (c) 2014 Benjamin Fleischer
 # All rights reserved.
 #
 # Redistribution  and  use  in  source  and  binary  forms,  with   or   without
@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-function preinstall_main
+function uninstall_osxfuse_main
 {
     # Source libraries
 
@@ -44,24 +44,19 @@ function preinstall_main
     common_log_initialize
     common_signal_trap_initialize
 
-    # Uninstall previous version
+    # Uninstall core
 
-    local version="`installer_package_get_info com.github.osxfuse.pkg.Core version`"
+    osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
+    osxfuse_uninstall_osxfuse_3_core
 
-    if [[ -n "${version}" ]]
+    # Uninstall MacFUSE compatibility layer
+
+    if installer_is_package_installed "com.github.osxfuse.pkg.MacFUSE"
     then
-        if version_compare_ge "${version}" 3.0.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
-
-        elif version_compare_ge "${version}" 2.3.0
-        then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
-            osxfuse_uninstall_osxfuse_2_core
-        fi
+        osxfuse_uninstall_osxfuse_3_macfuse
     fi
 
     return 0
 }
 
-preinstall_main "${@}"
+uninstall_osxfuse_main "${@}"

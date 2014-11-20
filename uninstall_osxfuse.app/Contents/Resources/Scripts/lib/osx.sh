@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2014 Benjamin Fleischer
+# Copyright (c) 2011-2014 Benjamin Fleischer
 # All rights reserved.
 #
 # Redistribution  and  use  in  source  and  binary  forms,  with   or   without
@@ -27,48 +27,24 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN  IF  ADVISED  OF  THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Requires common.sh
 
-function uninstaller_main
+
+function osx_get_version
 {
-    # Source libraries
-
-    local library_path=""
-    for library_path in "${BASH_SOURCE[0]%/*}/lib"/*.sh
-    do
-        if [[ -f "${library_path}" ]]
-        then
-            source "${library_path}" || return 1
-        fi
-    done
-
-    common_log_initialize
-    common_signal_trap_initialize
-
-    # Uninstall osxfuse
-
-    if [[ -e "/Library/Filesystems/osxfuse.fs" ]]
-    then
-        osxfuse_uninstall_osxfuse_3_core
-        osxfuse_uninstall_osxfuse_3_prefpane
-
-        if [[ -e /usr/local/lib/pkgconfig/macfuse.pc ]]
-        then
-            osxfuse_uninstall_osxfuse_3_macfuse
-        fi
-    fi
-
-    if [[ -e "/Library/Filesystems/osxfusefs.fs" ]]
-    then
-        osxfuse_uninstall_osxfuse_2_core
-        osxfuse_uninstall_osxfuse_2_prefpane
-
-        if [[ -e /usr/local/lib/libmacfuse_i32.2.dylib ]]
-        then
-            osxfuse_uninstall_osxfuse_2_macfuse
-        fi
-    fi
-
-    return 0
+    sw_vers -productVersion | /usr/bin/cut -d . -f 1,2 2> /dev/null
 }
 
-uninstaller_main "${@}"
+function osx_unload_kext
+{
+    local identifier="${1}"
+
+    common_assert "[[ -n `string_escape "${identifier}"` ]]"
+
+    if [[ -n "`/usr/sbin/kextstat -l -b "${identifier}"`" ]]
+    then
+        /sbin/kextunload -b "${identifier}" 1>&3 2>&4
+    else
+        return 0
+    fi
+}

@@ -28,6 +28,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+function installer_is_package_installed
+{
+    local identifier="${1}"
+
+    /usr/sbin/pkgutil --pkg-info "${identifier}" > /dev/null 2>&1
+}
+
 function installer_package_get_info
 {
     local identifier="${1}"
@@ -36,7 +43,7 @@ function installer_package_get_info
     local info=""
     info="`/usr/sbin/pkgutil --pkg-info "${identifier}" 2> /dev/null`"
 
-    if [[ ${?} -eq 0 && -n "${info}" ]]
+    if [[ ${?} -eq 0 ]]
     then
         /usr/bin/sed -E -n -e "s/^${field}: (.*)$/\1/p" <<< "${info}"
     else
