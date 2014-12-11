@@ -222,6 +222,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -257,6 +258,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Release;
 		};
