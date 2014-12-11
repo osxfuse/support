@@ -226,6 +226,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = "mount_$(OSXFUSE_NAME)";
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -265,6 +266,7 @@
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				PRODUCT_NAME = "mount_$(OSXFUSE_NAME)";
 				STRIP_INSTALLED_PRODUCT = YES;
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Release;
 		};
