@@ -58,7 +58,7 @@
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED < 1070 */
 
 #if OSXFUSE_ENABLE_MACFUSE_MODE
-    #define OSXFUSE_MACFUSE_MODE_ENV  "OSXFUSE_MACFUSE_MODE"
+    #define OSXFUSE_MACFUSE_MODE_ENV "OSXFUSE_MACFUSE_MODE"
 #endif
 
 #define KLVersionComponentGetInt(components, count, index) \
@@ -184,15 +184,15 @@ main(__unused int argc, __unused const char *argv[])
         goto out;
     }
 
-    result = getvfsbyname(OSXFUSE_FS_TYPE, &vfc);
+    result = getvfsbyname(OSXFUSE_NAME, &vfc);
     if (result) {
         // osxfuse kernel extension is not already loaded.
         goto load_kext;
     }
 
-    // Some version of osxfusefs is already loaded. Let us check it out.
+    // Some version of osxfuse is already loaded. Let's check it out.
 
-    result = sysctlbyname(SYSCTL_OSXFUSE_VERSION_NUMBER, version,
+    result = sysctlbyname(OSXFUSE_SYSCTL_VERSION_NUMBER, version,
                           &version_len, NULL, (size_t)0);
     if (result) {
         result = -1;
@@ -309,7 +309,7 @@ load_kext:
         admin_gid = admin_group->gr_gid;
 
         // If this fails, we don't care
-        (void)sysctlbyname(SYSCTL_OSXFUSE_TUNABLES_ADMIN, NULL, NULL,
+        (void)sysctlbyname(OSXFUSE_SYSCTL_TUNABLES_ADMIN, NULL, NULL,
                            &admin_gid, sizeof(admin_gid));
     }
 
@@ -323,7 +323,7 @@ kext_loaded:
             int32_t enabled = 1;
             size_t  length = 4;
 
-            (void)sysctlbyname(SYSCTL_OSXFUSE_MACFUSE_MODE, NULL, 0, &enabled,
+            (void)sysctlbyname(OSXFUSE_SYSCTL_MACFUSE_MODE, NULL, 0, &enabled,
                                length);
         }
     }

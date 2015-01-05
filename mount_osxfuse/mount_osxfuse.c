@@ -37,8 +37,6 @@
 #include <fsproperties.h>
 #include <CoreFoundation/CoreFoundation.h>
 
-#define PROGNAME "mount_" OSXFUSE_FS_TYPE
-
 static int signal_idx = -1;
 static int signal_fd  = -1;
 
@@ -432,7 +430,7 @@ fuse_process_mvals(void)
     }
 }
 
-/* OSXFUSE notifications */
+/* osxfuse notifications */
 
 enum osxfuse_notification {
     NOTIFICATION_INIT_COMPLETED,
@@ -546,14 +544,14 @@ check_kext_status(void)
     size_t version_len_desired = 0;
     struct vfsconf vfc = { 0 };
 
-    result = getvfsbyname(OSXFUSE_FS_TYPE, &vfc);
-    if (result) { /* OSXFUSE is not already loaded */
+    result = getvfsbyname(OSXFUSE_NAME, &vfc);
+    if (result) { /* osxfuse is not already loaded */
         return ESRCH;
     }
 
-    /* some version of OSXFUSE is already loaded; let us check it out */
+    /* Some version of osxfuse is already loaded. Let's check it out */
 
-    result = sysctlbyname(SYSCTL_OSXFUSE_VERSION_NUMBER, version,
+    result = sysctlbyname(OSXFUSE_SYSCTL_VERSION_NUMBER, version,
                           &version_len, (void *)NULL, (size_t)0);
     if (result) {
         return result;
@@ -587,15 +585,16 @@ signal_idx_atexit_handler(void)
          * size_t oldlen = sizeof(kill_fs_old);
          * size_t newlen = sizeof(kill_fs_new);
          *
-         * (void)sysctlbyname("osxfuse.control.kill_fs", (void *)&kill_fs_old,
-         *                    &oldlen, (void *)&kill_fs_new, newlen);
+         * (void)sysctlbyname("vfs.generic.osxfuse.control.kill_fs",
+         *                    (void *)&kill_fs_old, &oldlen,
+         *                    (void *)&kill_fs_new, newlen);
          */
     }
 }
 
 // We will be called as follows by the FUSE library:
 //
-//   mount_<OSXFUSE_FS_TYPE> -o OPTIONS... <fdnam> <mountpoint>
+//   mount_osxfuse -o OPTIONS... <fdnam> <mountpoint>
 
 int
 main(int argc, char **argv)
@@ -708,14 +707,15 @@ main(int argc, char **argv)
     }
 
     if (!fdnam) {
-        errx(EX_USAGE, "missing OSXFUSE device file descriptor");
+        errx(EX_USAGE, "missing " OSXFUSE_DISPLAY_NAME
+             " device file descriptor");
     }
 
     errno = 0;
     fd = (int)strtol(fdnam, NULL, 10);
     if ((errno == EINVAL) || (errno == ERANGE)) {
-        errx(EX_USAGE,
-             "invalid name (%s) for OSXFUSE device file descriptor", fdnam);
+        errx(EX_USAGE, "invalid name (%s) for " OSXFUSE_DISPLAY_NAME
+             " device file descriptor", fdnam);
     }
 
     signal_fd = fd;
@@ -726,7 +726,8 @@ main(int argc, char **argv)
         struct stat sb;
 
         if (fstat(fd, &sb) == -1) {
-            err(EX_OSERR, "fstat failed for OSXFUSE device file descriptor");
+            err(EX_OSERR, "fstat failed for " OSXFUSE_DISPLAY_NAME
+                " device file descriptor");
         }
         args.rdev = sb.st_rdev;
         (void)strlcpy(ndev, _PATH_DEV, sizeof(ndev));
@@ -744,7 +745,8 @@ main(int argc, char **argv)
                              NULL, 10);
         if ((errno == EINVAL) || (errno == ERANGE) ||
             (dindex < 0) || (dindex > OSXFUSE_NDEVICES)) {
-            errx(EX_USAGE, "invalid OSXFUSE device unit (#%d)\n", dindex);
+            errx(EX_USAGE, "invalid " OSXFUSE_DISPLAY_NAME
+                 " device unit (#%d)\n", dindex);
         }
     }
 
@@ -760,18 +762,18 @@ main(int argc, char **argv)
         break;
 
     case ESRCH:
-        errx(EX_UNAVAILABLE, "the OSXFUSE kernel extension is not loaded");
+        errx(EX_UNAVAILABLE, "the " OSXFUSE_DISPLAY_NAME
+             " kernel extension is not loaded");
         break;
 
     case EINVAL:
-        errx(EX_UNAVAILABLE,
-             "the loaded OSXFUSE kernel extension has a mismatched version");
+        errx(EX_UNAVAILABLE, "the loaded " OSXFUSE_DISPLAY_NAME
+             " kernel extension has a mismatched version");
         break;
 
     default:
-        errx(EX_UNAVAILABLE,
-             "failed to query the loaded OSXFUSE kernel extension (%d)",
-             result);
+        errx(EX_UNAVAILABLE, "failed to query the loaded " OSXFUSE_DISPLAY_NAME
+             " kernel extension (%d)", result);
         break;
     }
 
@@ -794,14 +796,14 @@ main(int argc, char **argv)
         errx(EX_OSFILE, "cannot stat the mount point %s", mntpath);
     }
 
-    if (((strlen(statfsb.f_fstypename) == strlen(OSXFUSE_FS_TYPE)) &&
-         (strcmp(statfsb.f_fstypename, OSXFUSE_FS_TYPE) == 0)) ||
-        ((strlen(OSXFUSE_FSTYPENAME_PREFIX) > 0) &&
-         (strncmp(statfsb.f_fstypename, OSXFUSE_FSTYPENAME_PREFIX,
-                  strlen(OSXFUSE_FSTYPENAME_PREFIX)) == 0))) {
+    if (((strlen(statfsb.f_fstypename) == strlen(OSXFUSE_NAME)) &&
+         (strcmp(statfsb.f_fstypename, OSXFUSE_NAME) == 0)) ||
+        ((strlen(OSXFUSE_TYPE_NAME_PREFIX) > 0) &&
+         (strncmp(statfsb.f_fstypename, OSXFUSE_TYPE_NAME_PREFIX,
+                  strlen(OSXFUSE_TYPE_NAME_PREFIX)) == 0))) {
         if (!(altflags & FUSE_MOPT_ALLOW_RECURSION)) {
-            errx(EX_USAGE,
-                 "mount point %s is itself on a OSXFUSE volume", mntpath);
+            errx(EX_USAGE, "mount point %s is itself on a "
+                 OSXFUSE_DISPLAY_NAME " volume", mntpath);
         }
     }
 
@@ -889,9 +891,9 @@ main(int argc, char **argv)
     }
 
     if (fstypename) {
-        if (strlen(fstypename) > FUSE_FSTYPENAME_MAXLEN) {
+        if (strlen(fstypename) > FUSE_TYPE_NAME_MAXLEN) {
             errx(EX_USAGE, "fstypename can be at most %lu characters",
-                 (long unsigned int) FUSE_FSTYPENAME_MAXLEN);
+                 (long unsigned int) FUSE_TYPE_NAME_MAXLEN);
         } else {
             snprintf(args.fstypename, MFSTYPENAMELEN, "%s", fstypename);
         }
@@ -904,7 +906,7 @@ main(int argc, char **argv)
         #endif
 
         if (daemon_name) {
-            snprintf(args.volname, MAXPATHLEN, OSXFUSE_VOLNAME_FORMAT_DAEMON,
+            snprintf(args.volname, MAXPATHLEN, OSXFUSE_VOLNAME_DAEMON_FORMAT,
                      dindex, daemon_name);
         } else {
             snprintf(args.volname, MAXPATHLEN, OSXFUSE_VOLNAME_FORMAT, dindex);
@@ -918,7 +920,7 @@ main(int argc, char **argv)
     }
 
     /* Finally! */
-    result = mount(OSXFUSE_FS_TYPE, mntpath, mntflags, (void *)&args);
+    result = mount(OSXFUSE_NAME, mntpath, mntflags, (void *)&args);
 
     if (result < 0) {
         err(EX_OSERR, "failed to mount %s@/dev/" OSXFUSE_DEVICE_BASENAME "%d",
@@ -938,52 +940,53 @@ showhelp()
 {
     if (!getenv("MOUNT_FUSEFS_CALL_BY_LIB")) {
         showversion(0);
-        fprintf(stderr, "\nThis program is not meant to be called directly. The OSXFUSE library calls it.\n");
+        fprintf(stderr, "\nThis program is not meant to be called directly. The "
+                OSXFUSE_DISPLAY_NAME " library calls it.\n");
     }
-    fprintf(stderr, "\nAvailable mount options:\n");
     fprintf(stderr,
-      "    -o allow_other         allow access to others besides the user who mounted\n"
-      "                           the file system\n"
-      "    -o allow_recursion     allow a mount point that itself resides on a OSXFUSE\n"
-      "                           volume (by default, such mounting is disallowed)\n"
-      "    -o allow_root          allow access to root (can't be used with allow_other)\n"
-      "    -o auto_xattr          handle extended attributes entirely through ._ files\n"
-      "    -o blocksize=<size>    specify block size in bytes of \"storage\"\n"
-      "    -o daemon_timeout=<s>  timeout in seconds for kernel calls to daemon\n"
-      "    -o debug               turn on debug information printing\n"
-      "    -o default_permissions let the kernel handle permission checks locally\n"
-      "    -o defer_permissions   defer permission checks to file operations themselves\n"
-      "    -o direct_io           use alternative (direct) path for kernel-user I/O\n"
-      "    -o extended_security   turn on Mac OS X extended security (ACLs)\n"
-      "    -o fsid=<fsid>         set the second 32-bit component of the fsid\n"
-      "    -o fsname=<name>       set the file system's name\n"
-      "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
-      "    -o fstypename=<name>   set the file system's type name\n"
-      "    -o iosize=<size>       specify maximum I/O size in bytes\n"
-      "    -o jail_symlinks       contain symbolic links within the mount\n"
-      "    -o local               mark the volume as \"local\" (default is \"nonlocal\")\n"
-      "    -o negative_vncache    enable vnode name caching of non-existent objects\n"
-      "    -o sparse              enable support for sparse files\n"
-      "    -o volname=<name>      set the file system's volume name\n"
-      "\nAvailable negative mount options:\n"
-      "    -o noalerts            disable all graphical alerts (if any) in OSXFUSE Core\n"
-      "    -o noappledouble       ignore Apple Double (._) and .DS_Store files entirely\n"
-      "    -o noapplexattr        ignore all \"com.apple.*\" extended attributes\n"
-      "    -o nobrowse            mark the volume as non-browsable by the Finder\n"
-      "    -o nolocalcaches       meta option equivalent to noreadahead,noubc,novncache\n"
-      "    -o noreadahead         disable I/O read-ahead behavior for this file system\n"
-      "    -o nosynconclose       disable sync-on-close behavior (enabled by default)\n"
-      "    -o nosyncwrites        disable synchronous-writes behavior (dangerous)\n"
-      "    -o noubc               disable the unified buffer cache for this file system\n"
-      "    -o novncache           disable the vnode name cache for this file system\n"
-    );
+            "\nAvailable mount options:\n"
+            "    -o allow_other         allow access to others besides the user who mounted\n"
+            "                           the file system\n"
+            "    -o allow_recursion     allow a mount point that itself resides on a " OSXFUSE_DISPLAY_NAME "\n"
+            "                           volume (by default, such mounting is disallowed)\n"
+            "    -o allow_root          allow access to root (can't be used with allow_other)\n"
+            "    -o auto_xattr          handle extended attributes entirely through ._ files\n"
+            "    -o blocksize=<size>    specify block size in bytes of \"storage\"\n"
+            "    -o daemon_timeout=<s>  timeout in seconds for kernel calls to daemon\n"
+            "    -o debug               turn on debug information printing\n"
+            "    -o default_permissions let the kernel handle permission checks locally\n"
+            "    -o defer_permissions   defer permission checks to file operations themselves\n"
+            "    -o direct_io           use alternative (direct) path for kernel-user I/O\n"
+            "    -o extended_security   turn on Mac OS X extended security (ACLs)\n"
+            "    -o fsid=<fsid>         set the second 32-bit component of the fsid\n"
+            "    -o fsname=<name>       set the file system's name\n"
+            "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
+            "    -o fstypename=<name>   set the file system's type name\n"
+            "    -o iosize=<size>       specify maximum I/O size in bytes\n"
+            "    -o jail_symlinks       contain symbolic links within the mount\n"
+            "    -o local               mark the volume as \"local\" (default is \"nonlocal\")\n"
+            "    -o negative_vncache    enable vnode name caching of non-existent objects\n"
+            "    -o sparse              enable support for sparse files\n"
+            "    -o volname=<name>      set the file system's volume name\n"
+            "\nAvailable negative mount options:\n"
+            "    -o noalerts            disable all graphical alerts (if any) in " OSXFUSE_DISPLAY_NAME " Core\n"
+            "    -o noappledouble       ignore Apple Double (._) and .DS_Store files entirely\n"
+            "    -o noapplexattr        ignore all \"com.apple.*\" extended attributes\n"
+            "    -o nobrowse            mark the volume as non-browsable by the Finder\n"
+            "    -o nolocalcaches       meta option equivalent to noreadahead,noubc,novncache\n"
+            "    -o noreadahead         disable I/O read-ahead behavior for this file system\n"
+            "    -o nosynconclose       disable sync-on-close behavior (enabled by default)\n"
+            "    -o nosyncwrites        disable synchronous-writes behavior (dangerous)\n"
+            "    -o noubc               disable the unified buffer cache for this file system\n"
+            "    -o novncache           disable the vnode name cache for this file system\n");
     exit(EX_USAGE);
 }
 
 void
 showversion(int doexit)
 {
-    fprintf(stderr, "OSXFUSE mount version %s\n", OSXFUSE_VERSION);
+    fprintf(stderr, "%s mount version %s\n", OSXFUSE_DISPLAY_NAME,
+            OSXFUSE_VERSION);
     if (doexit) {
         exit(EX_USAGE);
     }

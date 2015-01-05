@@ -15,6 +15,7 @@
 
 /* Begin PBXFileReference section */
 		433E5DC413B2D1B300A523B2 /* mount_osxfuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mount_osxfuse; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A374241A59E534007A64F9 /* fuse_preprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fuse_preprocessor.h; sourceTree = "<group>"; };
 		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
 		540966530C33B5F500F5E227 /* fuse_mount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_mount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		540966540C33B5F500F5E227 /* fuse_param.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_param.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -43,7 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				540966510C33B5F500F5E227 /* Common */,
-				5409665E0C33B60B00F5E227 /* mount_osxfusefs */,
+				5409665E0C33B60B00F5E227 /* mount_osxfuse */,
 				5409662C0C33B54300F5E227 /* Frameworks */,
 				433E5DC813B2D21900A523B2 /* Products */,
 			);
@@ -73,20 +74,20 @@
 				540966520C33B5F500F5E227 /* fuse_ioctl.h */,
 				540966530C33B5F500F5E227 /* fuse_mount.h */,
 				540966540C33B5F500F5E227 /* fuse_param.h */,
+				43A374241A59E534007A64F9 /* fuse_preprocessor.h */,
 				540966550C33B5F500F5E227 /* fuse_version.h */,
 			);
 			name = Common;
 			path = ../common;
 			sourceTree = "<group>";
 		};
-		5409665E0C33B60B00F5E227 /* mount_osxfusefs */ = {
+		5409665E0C33B60B00F5E227 /* mount_osxfuse */ = {
 			isa = PBXGroup;
 			children = (
 				5409665F0C33B60B00F5E227 /* getmntopts.c */,
 				540966610C33B60B00F5E227 /* mntopts.h */,
 				540966620C33B60B00F5E227 /* mount_osxfuse.c */,
 			);
-			name = mount_osxfusefs;
 			path = mount_osxfuse;
 			sourceTree = "<group>";
 		};

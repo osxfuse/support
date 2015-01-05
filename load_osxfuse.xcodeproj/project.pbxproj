@@ -17,6 +17,7 @@
 		433E5DC213B2D1B300A523B2 /* load_osxfuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = load_osxfuse; sourceTree = BUILT_PRODUCTS_DIR; };
 		435958DA15120F5500B4D7F5 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		437FB63015E1798100CFF17A /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		43A374231A59E528007A64F9 /* fuse_preprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fuse_preprocessor.h; sourceTree = "<group>"; };
 		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
 		540966530C33B5F500F5E227 /* fuse_mount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_mount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		540966540C33B5F500F5E227 /* fuse_param.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_param.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -43,7 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				540966510C33B5F500F5E227 /* Common */,
-				540966660C33B61A00F5E227 /* load_osxfusefs */,
+				540966660C33B61A00F5E227 /* load_osxfuse */,
 				5409662C0C33B54300F5E227 /* Frameworks */,
 				433E5DC813B2D21900A523B2 /* Products */,
 			);
@@ -74,18 +75,18 @@
 				540966520C33B5F500F5E227 /* fuse_ioctl.h */,
 				540966530C33B5F500F5E227 /* fuse_mount.h */,
 				540966540C33B5F500F5E227 /* fuse_param.h */,
+				43A374231A59E528007A64F9 /* fuse_preprocessor.h */,
 				540966550C33B5F500F5E227 /* fuse_version.h */,
 			);
 			name = Common;
 			path = ../common;
 			sourceTree = "<group>";
 		};
-		540966660C33B61A00F5E227 /* load_osxfusefs */ = {
+		540966660C33B61A00F5E227 /* load_osxfuse */ = {
 			isa = PBXGroup;
 			children = (
 				540966670C33B61A00F5E227 /* load_osxfuse.c */,
 			);
-			name = load_osxfusefs;
 			path = load_osxfuse;
 			sourceTree = "<group>";
 		};

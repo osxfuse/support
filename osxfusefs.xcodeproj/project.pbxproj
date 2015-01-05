@@ -52,7 +52,8 @@
 		439769351693A377001B7C4A /* osxfuse.fs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = osxfuse.fs; sourceTree = BUILT_PRODUCTS_DIR; };
 		439769391693A377001B7C4A /* osxfusefs-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-Info.plist"; sourceTree = "<group>"; };
 		4397693D1693A377001B7C4A /* osxfusefs-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "osxfusefs-Prefix.pch"; sourceTree = "<group>"; };
-		439769481693A8B2001B7C4A /* osxfusefs-version.plist */ = {isa = PBXFileReference; explicitFileType = text.xml; path = "osxfusefs-version.plist"; sourceTree = "<group>"; };
+		439769481693A8B2001B7C4A /* osxfusefs-version.plist */ = {isa = PBXFileReference; explicitFileType = text; path = "osxfusefs-version.plist"; sourceTree = "<group>"; };
+		43A374221A59E519007A64F9 /* fuse_preprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fuse_preprocessor.h; sourceTree = "<group>"; };
 		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
 		540966530C33B5F500F5E227 /* fuse_mount.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_mount.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		540966540C33B5F500F5E227 /* fuse_param.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fuse_param.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -136,6 +137,7 @@
 				540966520C33B5F500F5E227 /* fuse_ioctl.h */,
 				540966530C33B5F500F5E227 /* fuse_mount.h */,
 				540966540C33B5F500F5E227 /* fuse_param.h */,
+				43A374221A59E519007A64F9 /* fuse_preprocessor.h */,
 				540966550C33B5F500F5E227 /* fuse_version.h */,
 			);
 			name = Common;
@@ -169,6 +171,8 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "osxfusefs" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
