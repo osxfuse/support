@@ -214,7 +214,7 @@ main(__unused int argc, __unused const char *argv[])
      * extension.
      */
 
-    if (KextManagerUnloadKextWithIdentifier != NULL) {
+    if (&KextManagerUnloadKextWithIdentifier != NULL) {
         // Use KextManager to unload kernel extension
         result = KextManagerUnloadKextWithIdentifier(
                      CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
@@ -260,7 +260,7 @@ load_kext:
         goto out;
     }
 
-    if (KextManagerLoadKextWithURL != NULL) {
+    if (&KextManagerLoadKextWithURL != NULL) {
         /* Use KextManager to load kernel extension */
         CFStringRef km_path;
         CFURLRef km_url;
