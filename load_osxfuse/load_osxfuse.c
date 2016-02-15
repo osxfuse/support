@@ -57,10 +57,6 @@
     extern OSReturn KextManagerUnloadKextWithIdentifier(CFStringRef kextIdentifier) __attribute__((weak_import));
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED < 1070 */
 
-#if OSXFUSE_ENABLE_MACFUSE_MODE
-    #define OSXFUSE_MACFUSE_MODE_ENV "OSXFUSE_MACFUSE_MODE"
-#endif
-
 #define KLVersionComponentGetInt(components, count, index) \
     ((index) < (count) ? CFStringGetIntValue(CFArrayGetValueAtIndex((components), (index))) : 0)
 
@@ -206,7 +202,7 @@ main(__unused int argc, __unused const char *argv[])
         !strncmp(OSXFUSE_VERSION, version, version_len)) {
         // Currently loaded kernel extension is good
         result = 0;
-        goto kext_loaded;
+        goto out;
     }
 
     /*
@@ -312,22 +308,6 @@ load_kext:
         (void)sysctlbyname(OSXFUSE_SYSCTL_TUNABLES_ADMIN, NULL, NULL,
                            &admin_gid, sizeof(admin_gid));
     }
-
-kext_loaded:
-#if OSXFUSE_ENABLE_MACFUSE_MODE
-    {
-        char *env_value;
-        env_value = getenv(OSXFUSE_MACFUSE_MODE_ENV);
-        if (env_value != NULL && strcmp(env_value, "1") == 0) {
-            // Enable MacFUSE mode of kernel extension
-            int32_t enabled = 1;
-            size_t  length = 4;
-
-            (void)sysctlbyname(OSXFUSE_SYSCTL_MACFUSE_MODE, NULL, 0, &enabled,
-                               length);
-        }
-    }
-#endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
 
 out:
     if (kext_path) {

@@ -447,21 +447,6 @@ const char * const osxfuse_notification_names[] = {
 
 const char * const osxfuse_notification_object = OSXFUSE_IDENTIFIER;
 
-#if OSXFUSE_ENABLE_MACFUSE_MODE
-#define OSXFUSE_MACFUSE_MODE_ENV "OSXFUSE_MACFUSE_MODE"
-
-#define MACFUSE_NOTIFICATION_OBJECT \
-    "com.google.filesystems.fusefs.unotifications"
-
-const char * const macfuse_notification_names[] = {
-    MACFUSE_NOTIFICATION_OBJECT ".inited",       // NOTIFICATION_INIT_COMPLETED
-    MACFUSE_NOTIFICATION_OBJECT ".inittimedout", // NOTIFICATION_INIT_TIMED_OUT
-    MACFUSE_NOTIFICATION_OBJECT ".mounted"       // NOTIFICATION_MOUNT
-};
-
-const char * const macfuse_notification_object = MACFUSE_NOTIFICATION_OBJECT;
-#endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
-
 /* User info keys */
 
 #define kFUSEDevicePathKey "kFUSEDevicePath"
@@ -479,25 +464,12 @@ post_notification(const osxfuse_notification_t  notification,
     CFStringRef            object    = NULL;
     CFMutableDictionaryRef user_info = NULL;
 
-#if OSXFUSE_ENABLE_MACFUSE_MODE
-    char *env_value = getenv(OSXFUSE_MACFUSE_MODE_ENV);
-    if (env_value != NULL && strcmp(env_value, "1") == 0) {
-        name   = CFStringCreateWithCString(kCFAllocatorDefault,
-                                           macfuse_notification_names[notification],
-                                           kCFStringEncodingUTF8);
-        object = CFStringCreateWithCString(kCFAllocatorDefault,
-                                           macfuse_notification_object,
-                                           kCFStringEncodingUTF8);
-    } else
-#endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
-    {
-        name   = CFStringCreateWithCString(kCFAllocatorDefault,
-                                           osxfuse_notification_names[notification],
-                                           kCFStringEncodingUTF8);
-        object = CFStringCreateWithCString(kCFAllocatorDefault,
-                                           osxfuse_notification_object,
-                                           kCFStringEncodingUTF8);
-    }
+    name   = CFStringCreateWithCString(kCFAllocatorDefault,
+                                       osxfuse_notification_names[notification],
+                                       kCFStringEncodingUTF8);
+    object = CFStringCreateWithCString(kCFAllocatorDefault,
+                                       osxfuse_notification_object,
+                                       kCFStringEncodingUTF8);
 
     if (!name || !object) goto out;
     if (dict_count == 0)  goto post;
