@@ -1,43 +1,46 @@
 /*
  * Copyright (c) 2006-2008 Amit Singh/Google Inc.
- * Copyright (c) 2011-2012 Benjamin Fleischer
+ * Copyright (c) 2011-2016 Benjamin Fleischer
  * All rights reserved.
  */
 
-#include <err.h>
-#include <libgen.h>
-#include <sysexits.h>
-#include <paths.h>
 #include <assert.h>
+#include <err.h>
 #include <errno.h>
-#include <string.h>
-#include <stdio.h>
-#include <stddef.h>
-#include <stdlib.h>
 #include <fcntl.h>
+#include <fsproperties.h>
 #include <getopt.h>
+#include <libgen.h>
+#include <limits.h>
+#include <mach/mach.h>
+#include <paths.h>
+#include <signal.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/attr.h>
 #include <sys/mount.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
-#include <sys/types.h>
 #include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/un.h>
 #include <sys/vnode.h>
-#include <libgen.h>
-#include <signal.h>
-#include <mach/mach.h>
+#include <sysexits.h>
+#include <unistd.h>
 
-#include "mntopts.h"
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <fuse_ioctl.h>
 #include <fuse_mount.h>
 #include <fuse_param.h>
 #include <fuse_version.h>
 
-#include <fsproperties.h>
-#include <CoreFoundation/CoreFoundation.h>
+#include "mntopts.h"
 
-static int signal_idx = -1;
 static int signal_fd  = -1;
 
 void  showhelp(void);
@@ -570,10 +573,53 @@ check_kext_status(void)
     return 0;
 }
 
+static int
+send_fd(int sock_fd, int fd)
+{
+    ssize_t retval;
+
+    struct iovec vec;
+    char sendchar = 0;
+
+    struct msghdr msg;
+    char cmsgbuf[CMSG_SPACE(sizeof(fd))];
+    struct cmsghdr *cmsgp;
+
+    vec.iov_base = &sendchar;
+    vec.iov_len = sizeof(sendchar);
+
+    memset(cmsgbuf, 0, sizeof(cmsgbuf));
+
+    msg.msg_name = NULL;
+    msg.msg_namelen = 0;
+    msg.msg_iov = &vec;
+    msg.msg_iovlen = 1;
+    msg.msg_control = cmsgbuf;
+    msg.msg_controllen = (socklen_t)sizeof(cmsgbuf);
+    msg.msg_flags = 0;
+
+    cmsgp = CMSG_FIRSTHDR(&msg);
+    cmsgp->cmsg_len = CMSG_LEN(sizeof(fd));
+    cmsgp->cmsg_level = SOL_SOCKET;
+    cmsgp->cmsg_type = SCM_RIGHTS;
+
+    memcpy(CMSG_DATA(cmsgp), &fd, sizeof(fd));
+
+    msg.msg_controllen = cmsgp->cmsg_len;
+
+    while ((retval = sendmsg(sock_fd, &msg, 0)) == -1 && errno == EINTR);
+    if (retval != 1) {
+        perror("sending file descriptor");
+        return -1;
+    }
+
+    return 0;
+}
+
 static void
 signal_idx_atexit_handler(void)
 {
-    if (signal_idx != -1) {
+    if (signal_fd != -1) {
 
         (void)ioctl(signal_fd, FUSEDEVIOCSETDAEMONDEAD, &signal_fd);
 
@@ -601,13 +647,17 @@ main(int argc, char **argv)
 {
     int       result    = -1;
     int       mntflags  = 0;
+    int       cfd       = -1;
+    char     *fdnam     = NULL;
+    char     *dev       = NULL;
+    int       r         = 0;
+    char      devpath[MAXPATHLEN];
     int       fd        = -1;
     int32_t   dindex    = -1;
-    char     *fdnam     = NULL;
     uint64_t  altflags  = 0ULL;
     char     *mntpath   = NULL;
 
-    int i, ch = '\0', done = 0;
+    int ch = '\0', done = 0;
     struct mntopt *mo;
     struct mntval *mv;
     struct statfs statfsb;
@@ -635,18 +685,15 @@ main(int argc, char **argv)
     memset((void *)&args, 0, sizeof(args));
 
     do {
-        for (i = 0; i < 3; i++) {
-            if (optind < argc && argv[optind][0] != '-') {
-                if (mntpath) {
-                    done = 1;
-                    break;
-                }
-                if (fdnam)
-                    mntpath = argv[optind];
-                else
-                    fdnam = argv[optind];
+        if (optind < argc && argv[optind][0] != '-') {
+            if (optind + 1 < argc) {
+                fdnam = argv[optind];
                 optind++;
             }
+
+            mntpath = argv[optind];
+            optind++;
+            done = 1;
         }
 
         switch(ch) {
@@ -695,69 +742,71 @@ main(int argc, char **argv)
         if (done) {
             break;
         }
-
     } while ((ch = getopt(argc, argv, "ho:v")) != -1);
 
     argc -= optind;
     argv += optind;
 
-    if ((!fdnam) && argc > 0) {
-        fdnam = *argv++;
-        argc--;
+    if (!mntpath) {
+        errx(EX_USAGE, "missing mount point");
     }
 
     if (!fdnam) {
-        errx(EX_USAGE, "missing " OSXFUSE_DISPLAY_NAME
-             " device file descriptor");
-    }
+        char *commfd;
 
-    errno = 0;
-    fd = (int)strtol(fdnam, NULL, 10);
-    if ((errno == EINVAL) || (errno == ERANGE)) {
-        errx(EX_USAGE, "invalid name (%s) for " OSXFUSE_DISPLAY_NAME
-             " device file descriptor", fdnam);
-    }
-
-    signal_fd = fd;
-
-    {
-        char  ndev[MAXPATHLEN];
-        char *ndevbas;
-        struct stat sb;
-
-        if (fstat(fd, &sb) == -1) {
-            err(EX_OSERR, "fstat failed for " OSXFUSE_DISPLAY_NAME
-                " device file descriptor");
-        }
-        args.rdev = sb.st_rdev;
-        (void)strlcpy(ndev, _PATH_DEV, sizeof(ndev));
-        ndevbas = ndev + strlen(_PATH_DEV);
-        devname_r(sb.st_rdev, S_IFCHR, ndevbas,
-                  (int)(sizeof(ndev) - strlen(_PATH_DEV)));
-
-        if (strncmp(ndevbas, OSXFUSE_DEVICE_BASENAME,
-                    strlen(OSXFUSE_DEVICE_BASENAME))) {
-            errx(EX_USAGE, "mounting inappropriate device");
+        commfd = getenv("_FUSE_COMMFD");
+        if (commfd == NULL) {
+            errx(EX_USAGE, "mew style mounting requires commfd");
         }
 
         errno = 0;
-        dindex = (int)strtol(ndevbas + strlen(OSXFUSE_DEVICE_BASENAME),
-                             NULL, 10);
-        if ((errno == EINVAL) || (errno == ERANGE) ||
-            (dindex < 0) || (dindex > OSXFUSE_NDEVICES)) {
-            errx(EX_USAGE, "invalid " OSXFUSE_DISPLAY_NAME
-                 " device unit (#%d)\n", dindex);
+        cfd = (int)strtol(commfd, NULL, 10);
+        if (errno == EINVAL || errno == ERANGE || cfd < 0) {
+            errx(EX_USAGE, "invalid commfd");
         }
+
+        fdnam = getenv("FUSE_DEV_FD");
     }
 
-    signal_idx = dindex;
+    if (fdnam) {
+        errno = 0;
+        fd = (int)strtol(fdnam, NULL, 10);
+        if (errno == EINVAL || errno == ERANGE || fd < 0) {
+            errx(EX_USAGE, "invalid value given in FUSE_DEV_FD");
+        }
 
-    atexit(signal_idx_atexit_handler);
+        goto mount;
+    }
+
+    dev = getenv("FUSE_DEV_NAME");
+    if (dev) {
+        fd = open(dev, O_RDWR);
+        if (fd < 0) {
+            errx(EX_USAGE, "failed to open device");
+        }
+
+        goto mount;
+    }
+
+    for (r = 0; r < OSXFUSE_NDEVICES; r++) {
+        snprintf(devpath, MAXPATHLEN - 1,
+                 _PATH_DEV OSXFUSE_DEVICE_BASENAME "%d", r);
+        fd = open(devpath, O_RDWR);
+        if (fd >= 0) {
+            dindex = r;
+            break;
+        }
+    }
+    if (dindex == -1) {
+        errx(EX_OSERR, "failed to open device");
+    }
+
+mount:
+    signal_fd = fd;
+    atexit(&signal_idx_atexit_handler);
 
     result = check_kext_status();
-
     switch (result) {
-
     case 0:
         break;
 
@@ -777,13 +826,31 @@ main(int argc, char **argv)
         break;
     }
 
-    if ((!mntpath) && argc > 0) {
-        mntpath = *argv++;
-        argc--;
+    {
+        struct stat sb;
+        if (fstat(fd, &sb) == -1) {
+            err(EX_OSERR, "fstat failed for " OSXFUSE_DISPLAY_NAME " device file descriptor");
+        }
+        args.rdev = sb.st_rdev;
     }
 
-    if (!mntpath) {
-        errx(EX_USAGE, "missing mount point");
+    if (dindex < 0) {
+        char  ndev[MAXPATHLEN];
+        char *ndevbas;
+
+        (void)strlcpy(ndev, _PATH_DEV, sizeof(ndev));
+        ndevbas = ndev + strlen(_PATH_DEV);
+        devname_r(args.rdev, S_IFCHR, ndevbas, (int)(sizeof(ndev) - strlen(_PATH_DEV)));
+
+        if (strncmp(ndevbas, OSXFUSE_DEVICE_BASENAME, strlen(OSXFUSE_DEVICE_BASENAME))) {
+            errx(EX_USAGE, "mounting inappropriate device");
+        }
+
+        errno = 0;
+        dindex = (int)strtol(ndevbas + strlen(OSXFUSE_DEVICE_BASENAME), NULL, 10);
+        if (errno == EINVAL || errno == ERANGE || dindex < 0 || dindex > OSXFUSE_NDEVICES) {
+            errx(EX_USAGE, "invalid " OSXFUSE_DISPLAY_NAME " device unit (#%d)\n", dindex);
+        }
     }
 
     (void)checkpath(mntpath, args.mntpath);
@@ -865,11 +932,11 @@ main(int argc, char **argv)
     }
 
     args.altflags       = altflags;
-    args.blocksize      = (uint32_t) blocksize;
-    args.daemon_timeout = (uint32_t) daemon_timeout;
-    args.fsid           = (uint32_t) fsid;
-    args.fssubtype      = (uint32_t) fssubtype;
-    args.iosize         = (uint32_t) iosize;
+    args.blocksize      = (uint32_t)blocksize;
+    args.daemon_timeout = (uint32_t)daemon_timeout;
+    args.fsid           = (uint32_t)fsid;
+    args.fssubtype      = (uint32_t)fssubtype;
+    args.iosize         = (uint32_t)iosize;
     args.random         = drandom;
 
     char *daemon_name = NULL;
@@ -930,8 +997,14 @@ main(int argc, char **argv)
         post_notification(NOTIFICATION_MOUNT, dict, 1);
     }
 
-    signal_idx = -1;
+    if (cfd != -1) {
+        result = send_fd(cfd, fd);
+        if (result == -1) {
+            err(EX_OSERR, "failed to send file descriptor");
+        }
+    }
 
+    signal_fd = -1;
     exit(0);
 }
 
