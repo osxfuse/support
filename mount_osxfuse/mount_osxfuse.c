@@ -657,7 +657,6 @@ main(int argc, char **argv)
     uint64_t  altflags  = 0ULL;
     char     *mntpath   = NULL;
 
-    int ch = '\0', done = 0;
     struct mntopt *mo;
     struct mntval *mv;
     struct statfs statfsb;
@@ -668,84 +667,74 @@ main(int argc, char **argv)
         /* NOTREACHED */
     }
 
-    /* Kludge to make "<fsdaemon> --version" happy. */
-    if ((argc == 2) &&
-        ((!strncmp(argv[1], "--version", strlen("--version"))) ||
-         (!strncmp(argv[1], "-v", strlen("-v"))))) {
-        showversion(1);
-    }
-
-    /* Kludge to make "<fsdaemon> --help" happy. */
-    if ((argc == 2) &&
-        ((!strncmp(argv[1], "--help", strlen("--help"))) ||
-         (!strncmp(argv[1], "-h", strlen("-h"))))) {
-        showhelp();
-    }
-
     memset((void *)&args, 0, sizeof(args));
 
-    do {
-        if (optind < argc && argv[optind][0] != '-') {
-            if (optind + 1 < argc) {
-                fdnam = argv[optind];
-                optind++;
-            }
+    while (true) {
+        static struct option long_options[] = {
+            {"help",    no_argument, NULL, 'h'},
+            {"version", no_argument, NULL, 'v'},
+            {NULL, 0, NULL, 0}
+        };
 
-            mntpath = argv[optind];
-            optind++;
-            done = 1;
+        int c = getopt_long(argc, argv, "ho:v", long_options, NULL);
+        if (c == -1) {
+            break;
         }
 
-        switch(ch) {
-        case 'o':
-            getmntopts(optarg, mopts, &mntflags, &altflags);
-            for (mv = mvals; mv->mv_mntflag; ++mv) {
-                if (!(altflags & mv->mv_mntflag)) {
-                    continue;
-                }
-                for (mo = mopts; mo->m_option; ++mo) {
-                    char *p, *q;
-                    if (mo->m_flag != mv->mv_mntflag) {
+        switch (c) {
+            case 'o':
+                getmntopts(optarg, mopts, &mntflags, &altflags);
+                for (mv = mvals; mv->mv_mntflag; ++mv) {
+                    if (!(altflags & mv->mv_mntflag)) {
                         continue;
                     }
-                    p = strstr(optarg, mo->m_option);
-                    if (p) {
-                        p += strlen(mo->m_option);
-                        q = p;
-                        while (*q != '\0' && *q != ',') {
-                            q++;
+                    for (mo = mopts; mo->m_option; ++mo) {
+                        char *p, *q;
+                        if (mo->m_flag != mv->mv_mntflag) {
+                            continue;
                         }
-                        mv->mv_len = q - p + 1;
-                        mv->mv_value = malloc(mv->mv_len);
-                        memcpy(mv->mv_value, p, mv->mv_len - 1);
-                        ((char *)mv->mv_value)[mv->mv_len - 1] = '\0';
-                        break;
+                        p = strstr(optarg, mo->m_option);
+                        if (p) {
+                            p += strlen(mo->m_option);
+                            q = p;
+                            while (*q != '\0' && *q != ',') {
+                                q++;
+                            }
+                            mv->mv_len = q - p + 1;
+                            mv->mv_value = malloc(mv->mv_len);
+                            memcpy(mv->mv_value, p, mv->mv_len - 1);
+                            ((char *)mv->mv_value)[mv->mv_len - 1] = '\0';
+                            break;
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case '\0':
-            break;
+            case 'v':
+                showversion(true);
+                break;
 
-        case 'v':
-            showversion(1);
-            break;
-
-        case '?':
-        case 'h':
-        default:
-            showhelp();
-            break;
+            case 'h':
+            case '?':
+            default:
+                showhelp();
+                break;
         }
-
-        if (done) {
-            break;
-        }
-    } while ((ch = getopt(argc, argv, "ho:v")) != -1);
+    }
 
     argc -= optind;
     argv += optind;
+
+    if (argc >= 2) {
+        fdnam = argv[0];
+        argc--;
+        argv++;
+    }
+    if (argc >= 1) {
+        mntpath = argv[0];
+        argc--;
+        argv++;
+    }
 
     if (!mntpath) {
         errx(EX_USAGE, "missing mount point");
