@@ -663,7 +663,7 @@ main(int argc, char **argv)
     struct statfs statfsb;
     fuse_mount_args args;
 
-    if (!getenv("MOUNT_FUSEFS_CALL_BY_LIB")) {
+    if (!getenv("MOUNT_OSXFUSE_CALL_BY_LIB")) {
         showhelp();
         /* NOTREACHED */
     }
