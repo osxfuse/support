@@ -612,7 +612,7 @@ signal_idx_atexit_handler(void)
 
 // We will be called as follows by the FUSE library:
 //
-//   mount_osxfuse -o OPTIONS... <fdnam> <mountpoint>
+//   mount_osxfuse -o OPTIONS... <mountpoint>
 
 int
 main(int argc, char **argv)
@@ -697,11 +697,6 @@ main(int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    if (argc >= 2) {
-        fdnam = argv[0];
-        argc--;
-        argv++;
-    }
     if (argc >= 1) {
         mntpath = argv[0];
         argc--;
@@ -712,7 +707,7 @@ main(int argc, char **argv)
         errx(EX_USAGE, "missing mount point");
     }
 
-    if (!fdnam) {
+    {
         char *commfd;
 
         commfd = getenv("_FUSE_COMMFD");
@@ -725,10 +720,9 @@ main(int argc, char **argv)
         if (errno == EINVAL || errno == ERANGE || cfd < 0) {
             errx(EX_USAGE, "invalid commfd");
         }
-
-        fdnam = getenv("FUSE_DEV_FD");
     }
 
+    fdnam = getenv("FUSE_DEV_FD");
     if (fdnam) {
         errno = 0;
         fd = (int)strtol(fdnam, NULL, 10);
