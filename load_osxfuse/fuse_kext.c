@@ -290,7 +290,7 @@ fuse_kext_load(void)
             ret = errno;
         } else if (pid == 0) {
             (void)execl(SYSTEM_KEXTLOAD, SYSTEM_KEXTLOAD, path, NULL);
-            return errno;
+            _exit(1);
         } else {
             int status;
             if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
@@ -347,7 +347,7 @@ fuse_kext_unload(void)
         } else if (pid == 0) {
             (void)execl(SYSTEM_KEXTUNLOAD, SYSTEM_KEXTUNLOAD, "-b",
                         OSXFUSE_BUNDLE_IDENTIFIER, NULL);
-            return errno;
+            _exit(1);
         } else {
             int status;
             if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
