@@ -56,24 +56,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Portions copyright (c) 2000-2004 Apple Computer, Inc. All rights reserved.
- *
- * This file contains Original Code and/or Modifications of Original Code as
- * defined in and that are subject to the Apple Public Source License Version
- * 2.0 (the 'License'). You may not use this file except in compliance with the
- * License. Please obtain a copy of the License at
- * http://www.opensource.apple.com/apsl/ and read it before using this file.
- *
- * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see
- * the License for the specific language governing rights and limitations under
- * the License.
- */
-
 #include "fuse_kext.h"
 
 #include <Availability.h>
@@ -86,30 +68,12 @@
 #include <unistd.h>
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/kext/KextManager.h>
 
 #include <fuse_param.h>
 #include <fuse_version.h>
 
 #define SYSTEM_VERSION_PATH "/System/Library/CoreServices/SystemVersion.plist"
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
-    #include <IOKit/kext/KextManager.h>
-#else
-    #include <libkern/OSReturn.h>
-
-    extern OSReturn KextManagerLoadKextWithURL(
-        CFURLRef kextURL,
-        CFArrayRef dependencyKextAndFolderURLs
-    ) __attribute__((weak_import));
-#endif
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
-    #include <libkern/OSReturn.h>
-
-    extern OSReturn KextManagerUnloadKextWithIdentifier(
-        CFStringRef kextIdentifier
-    ) __attribute__((weak_import));
-#endif
 
 static int
 fuse_system_get_version(int *major, int *minor, int *bugfix)
@@ -132,18 +96,9 @@ fuse_system_get_version(int *major, int *minor, int *bugfix)
         return 1;
     }
 
-    CFPropertyListRef plist = NULL;
-
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 1060
-    // CFPropertyListCreateFromStream will be deprecated soon
-    plist = CFPropertyListCreateFromStream(kCFAllocatorDefault, plist_stream, 0,
-                                           kCFPropertyListImmutable,
-                                           NULL, NULL);
-#else
-    plist = CFPropertyListCreateWithStream(kCFAllocatorDefault, plist_stream, 0,
-                                           kCFPropertyListImmutable,
-                                           NULL, NULL);
-#endif
+    CFPropertyListRef plist = CFPropertyListCreateWithStream(
+            kCFAllocatorDefault, plist_stream, 0, kCFPropertyListImmutable,
+            NULL, NULL);
 
     CFReadStreamClose(plist_stream);
     CFRelease(plist_stream);
@@ -260,48 +215,18 @@ fuse_kext_load(void)
         return ret;
     }
 
-#if __clang__
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wunreachable-code"
-#endif
+    CFStringRef km_path = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                    path,
+                                                    kCFStringEncodingUTF8);
+    CFURLRef km_url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
+                                                    km_path,
+                                                    kCFURLPOSIXPathStyle,
+                                                    true);
 
-    if (&KextManagerLoadKextWithURL != NULL) {
-        CFStringRef km_path = CFStringCreateWithCString(kCFAllocatorDefault,
-                                                        path,
-                                                        kCFStringEncodingUTF8);
-        CFURLRef km_url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
-                                                        km_path,
-                                                        kCFURLPOSIXPathStyle,
-                                                        true);
+    ret = KextManagerLoadKextWithURL(km_url, NULL);
 
-        ret = KextManagerLoadKextWithURL(km_url, NULL);
-
-        CFRelease(km_path);
-        CFRelease(km_url);
-
-    } else {
-        /*
-         * KextManager is not available on Mac OS X versions prior to 10.6. We
-         * need to fall back to calling kextload directly.
-         */
-
-        int pid = fork();
-        if (pid == -1) {
-            ret = errno;
-        } else if (pid == 0) {
-            (void)execl(SYSTEM_KEXTLOAD, SYSTEM_KEXTLOAD, path, NULL);
-            _exit(1);
-        } else {
-            int status;
-            if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
-                ret = WEXITSTATUS(status);
-            }
-        }
-    }
-
-#if __clang__
-    #pragma clang diagnostic pop
-#endif
+    CFRelease(km_path);
+    CFRelease(km_url);
 
     free(path);
     if (ret) {
@@ -325,40 +250,6 @@ fuse_kext_load(void)
 int
 fuse_kext_unload(void)
 {
-    int ret = 0;
-
-#if __clang__
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wunreachable-code"
-#endif
-
-    if (&KextManagerUnloadKextWithIdentifier != NULL) {
-        ret = KextManagerUnloadKextWithIdentifier(
-                CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
-    } else {
-        /*
-         * KextManager is not available on Mac OS X versions prior to 10.6. We
-         * need to fall back to calling kextunload directly.
-         */
-
-        int pid = fork();
-        if (pid == -1) {
-            ret = errno;
-        } else if (pid == 0) {
-            (void)execl(SYSTEM_KEXTUNLOAD, SYSTEM_KEXTUNLOAD, "-b",
-                        OSXFUSE_BUNDLE_IDENTIFIER, NULL);
-            _exit(1);
-        } else {
-            int status;
-            if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
-                ret = WEXITSTATUS(status);
-            }
-        }
-    }
-
-#if __clang__
-    #pragma clang diagnostic pop
-#endif
-
-    return ret;
+    return KextManagerUnloadKextWithIdentifier(
+            CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
 }
