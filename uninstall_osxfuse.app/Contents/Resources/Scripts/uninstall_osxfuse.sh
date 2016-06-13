@@ -46,7 +46,7 @@ function uninstall_osxfuse_main
 
     # Uninstall core
 
-    osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
+    macos_unload_kext "com.github.osxfuse.filesystems.osxfuse"
     osxfuse_uninstall_osxfuse_3_core
 
     # Uninstall MacFUSE compatibility layer

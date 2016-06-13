@@ -52,11 +52,11 @@ function preinstall_main
     then
         if version_compare_ge "${version}" 3.0.0
         then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
+            macos_unload_kext "com.github.osxfuse.filesystems.osxfuse"
 
         elif version_compare_ge "${version}" 2.3.0
         then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
+            macos_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
             osxfuse_uninstall_osxfuse_2_core
         fi
     fi

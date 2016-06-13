@@ -49,7 +49,7 @@ function preinstall_main
     local version=""
     version="`installer_package_get_info com.google.macfuse.core version`"
 
-    if [[ ${?} -ne 0 && "`osx_get_version`" = "10.5" && -e "/Library/Receipts/MacFUSE Core.pkg" ]]
+    if [[ ${?} -ne 0 && "`macos_get_version`" = "10.5" && -e "/Library/Receipts/MacFUSE Core.pkg" ]]
     then
         # Note: Mac OS X 10.4 style packages like MacFUSE are not added to the
         # Mac OS X 10.5 installer database.
@@ -64,7 +64,7 @@ function preinstall_main
         version_compare "${version}" 2.3
         if (( ${?} ==  1 ))
         then
-            osx_unload_kext "com.google.filesystems.fusefs"
+            macos_unload_kext "com.google.filesystems.fusefs"
             osxfuse_uninstall_macfuse
         else
             osxfuse_uninstall_osxfuse_2_macfuse

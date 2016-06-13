@@ -64,12 +64,12 @@ function uninstall_osxfuse_main
     then
         if version_compare_ge "${core_version}" 3.0
         then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfuse"
+            macos_unload_kext "com.github.osxfuse.filesystems.osxfuse"
             osxfuse_uninstall_osxfuse_3_core
 
         elif version_compare_ge "${core_version}" 2.3
         then
-            osx_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
+            macos_unload_kext "com.github.osxfuse.filesystems.osxfusefs"
             osxfuse_uninstall_osxfuse_2_core
         fi
     fi

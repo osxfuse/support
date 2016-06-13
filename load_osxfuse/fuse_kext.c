@@ -202,7 +202,7 @@ fuse_kext_get_path(char **path)
     if (fuse_system_get_version(&version_major, &version_minor, NULL)) {
         /*
          * In order to load the correct kernel extension we need to determine
-         * the version of Mac OS X. Since we cannot figure out which version is
+         * the version of macOS. Since we cannot figure out which version is
          * running return ENOENT.
          */
         return ENOENT;
