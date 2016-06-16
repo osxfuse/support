@@ -985,7 +985,7 @@ showhelp()
             "    -o default_permissions let the kernel handle permission checks locally\n"
             "    -o defer_permissions   defer permission checks to file operations themselves\n"
             "    -o direct_io           use alternative (direct) path for kernel-user I/O\n"
-            "    -o extended_security   turn on Mac OS X extended security (ACLs)\n"
+            "    -o extended_security   turn on macOS extended security (ACLs)\n"
             "    -o fsid=<fsid>         set the second 32-bit component of the fsid\n"
             "    -o fsname=<name>       set the file system's name\n"
             "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
