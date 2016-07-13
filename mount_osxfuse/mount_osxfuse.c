@@ -690,7 +690,7 @@ main(int argc, char **argv)
                     }
                     for (mo = mopts; mo->m_option; ++mo) {
                         char *p, *q;
-                        if (mo->m_flag != mv->mv_mntflag) {
+                        if (!mo->m_altloc || mo->m_flag != mv->mv_mntflag) {
                             continue;
                         }
                         p = strstr(optarg, mo->m_option);
