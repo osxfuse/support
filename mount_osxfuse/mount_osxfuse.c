@@ -663,18 +663,21 @@ main(int argc, char **argv)
     struct statfs statfsb;
     fuse_mount_args args;
 
+    // Drop to real uid and gid
+    seteuid(getuid());
+    setegid(getgid());
+
     if (!getenv("MOUNT_OSXFUSE_CALL_BY_LIB")) {
         showhelp();
-        /* NOTREACHED */
     }
 
     memset((void *)&args, 0, sizeof(args));
 
     while (true) {
         static struct option long_options[] = {
-            {"help",    no_argument, NULL, 'h'},
-            {"version", no_argument, NULL, 'v'},
-            {NULL, 0, NULL, 0}
+            { "help",    no_argument, NULL, 'h' },
+            { "version", no_argument, NULL, 'v' },
+            { NULL, 0, NULL, 0 }
         };
 
         int c = getopt_long(argc, argv, "ho:v", long_options, NULL);
@@ -843,7 +846,44 @@ mount:
         }
     }
 
-    (void)checkpath(mntpath, args.mntpath);
+    while (true) {
+        struct stat sb;
+
+        if (realpath(mntpath, args.mntpath) != NULL &&
+            stat(args.mntpath, &sb) == 0) {
+
+            if (S_ISDIR(sb.st_mode)) {
+                break;
+            } else {
+                errx(EX_USAGE, "%s: not a directory", args.mntpath);
+            }
+
+        } else if (errno == ENOENT) {
+            bool volumes = strncmp(args.mntpath, "/Volumes/", 9) == 0 &&
+                           strchr(args.mntpath + 9, '/') == NULL;
+
+            if (volumes) {
+                (void)seteuid(0);
+                (void)setegid(0);
+            }
+
+            if (mkdir(args.mntpath, 0755)) {
+                errx(EX_USAGE, "%s: %s", args.mntpath, strerror(errno));
+            }
+
+            if (volumes) {
+                uid_t uid = getuid();
+                gid_t gid = getgid();
+
+                (void)chown(args.mntpath, uid, gid);
+                (void)seteuid(uid);
+                (void)setegid(gid);
+            }
+
+        } else {
+            errx(EX_USAGE, "%s: %s", args.mntpath, strerror(errno));
+        }
+    }
 
     mntpath = args.mntpath;
 
@@ -1001,7 +1041,7 @@ mount:
 void
 showhelp()
 {
-    if (!getenv("MOUNT_FUSEFS_CALL_BY_LIB")) {
+    if (!getenv("MOUNT_OSXFUSE_CALL_BY_LIB")) {
         showversion(0);
         fprintf(stderr, "\nThis program is not meant to be called directly. The "
                 OSXFUSE_DISPLAY_NAME " library calls it.\n");
