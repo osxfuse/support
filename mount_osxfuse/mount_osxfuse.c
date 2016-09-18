@@ -5,6 +5,7 @@
  */
 
 #include <assert.h>
+#include <AssertMacros.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -28,6 +29,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <sys/utsname.h>
 #include <sys/vnode.h>
 #include <sysexits.h>
 #include <unistd.h>
@@ -41,10 +43,11 @@
 
 #include "mntopts.h"
 
+static bool quiet_mode = false;
 static int signal_fd  = -1;
 
-void  showhelp(void);
-void  showversion(int doexit);
+void showhelp(void);
+void showversion(int doexit);
 
 struct mntopt mopts[] = {
     MOPT_STDOPTS,
@@ -437,16 +440,18 @@ fuse_process_mvals(void)
 /* osxfuse notifications */
 
 enum osxfuse_notification {
-    NOTIFICATION_INIT_COMPLETED,
-    NOTIFICATION_INIT_TIMED_OUT,
+    NOTIFICATION_OS_IS_TOO_NEW,
+    NOTIFICATION_OS_IS_TOO_OLD,
+    NOTIFICATION_VERSION_MISMATCH,
     NOTIFICATION_MOUNT
 };
 typedef enum osxfuse_notification osxfuse_notification_t;
 
 const char * const osxfuse_notification_names[] = {
-    "k" OSXFUSE_DISPLAY_NAME "InitCompleted", // NOTIFICATION_INIT_COMPLETED
-    "k" OSXFUSE_DISPLAY_NAME "InitTimedOut",  // NOTIFICATION_INIT_TIMED_OUT
-    "k" OSXFUSE_DISPLAY_NAME "Mount"          // NOTIFICATION_MOUNT
+    "k" OSXFUSE_DISPLAY_NAME "OSIsTooNew",      // NOTIFICATION_OS_IS_TOO_NEW
+    "k" OSXFUSE_DISPLAY_NAME "OSIsTooOld",      // NOTIFICATION_OS_IS_TOO_OLD
+    "k" OSXFUSE_DISPLAY_NAME "VersionMismatch", // NOTIFICATION_VERSION_MISMATCH
+    "k" OSXFUSE_DISPLAY_NAME "Mount"            // NOTIFICATION_MOUNT
 };
 
 const char * const osxfuse_notification_object = OSXFUSE_IDENTIFIER;
@@ -454,16 +459,26 @@ const char * const osxfuse_notification_object = OSXFUSE_IDENTIFIER;
 #if OSXFUSE_ENABLE_MACFUSE_MODE
 #define OSXFUSE_MACFUSE_MODE_ENV "OSXFUSE_MACFUSE_MODE"
 
+#define MACFUSE_NOTIFICATION_PREFIX_LIB "com.google.filesystems.libfuse"
+#define MACFUSE_NOTIFICATION_OBJECT_LIB \
+    MACFUSE_NOTIFICATION_PREFIX_LIB ".unotifications"
+
 #define MACFUSE_NOTIFICATION_OBJECT \
     "com.google.filesystems.fusefs.unotifications"
 
 const char * const macfuse_notification_names[] = {
-    MACFUSE_NOTIFICATION_OBJECT ".inited",       // NOTIFICATION_INIT_COMPLETED
-    MACFUSE_NOTIFICATION_OBJECT ".inittimedout", // NOTIFICATION_INIT_TIMED_OUT
-    MACFUSE_NOTIFICATION_OBJECT ".mounted"       // NOTIFICATION_MOUNT
+    MACFUSE_NOTIFICATION_PREFIX_LIB ".osistoonew",      // NOTIFICATION_OS_IS_TOO_NEW
+    MACFUSE_NOTIFICATION_PREFIX_LIB ".osistooold",      // NOTIFICATION_OS_IS_TOO_OLD
+    MACFUSE_NOTIFICATION_PREFIX_LIB ".versionmismatch", // NOTIFICATION_VERSION_MISMATCH
+    MACFUSE_NOTIFICATION_OBJECT ".mounted"              // NOTIFICATION_MOUNT
 };
 
-const char * const macfuse_notification_object = MACFUSE_NOTIFICATION_OBJECT;
+const char * const macfuse_notification_object[] = {
+    MACFUSE_NOTIFICATION_OBJECT_LIB,
+    MACFUSE_NOTIFICATION_OBJECT_LIB,
+    MACFUSE_NOTIFICATION_OBJECT_LIB,
+    MACFUSE_NOTIFICATION_OBJECT
+};
 #endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
 
 /* User info keys */
@@ -490,7 +505,7 @@ post_notification(const osxfuse_notification_t  notification,
                                            macfuse_notification_names[notification],
                                            kCFStringEncodingUTF8);
         object = CFStringCreateWithCString(kCFAllocatorDefault,
-                                           macfuse_notification_object,
+                                           macfuse_notification_object[notification],
                                            kCFStringEncodingUTF8);
     } else
 #endif /* OSXFUSE_ENABLE_MACFUSE_MODE */
@@ -537,6 +552,95 @@ out:
     if (name)      CFRelease(name);
     if (object)    CFRelease(object);
     if (user_info) CFRelease(user_info);
+}
+
+static long
+fuse_os_version_major_np(void)
+{
+    int ret = 0;
+    long major = 0;
+    char *c = NULL;
+    struct utsname u;
+    size_t oldlen;
+
+    oldlen = sizeof(u.release);
+
+    ret = sysctlbyname("kern.osrelease", u.release, &oldlen, NULL, 0);
+    if (ret != 0) {
+        return -1;
+    }
+
+    c = strchr(u.release, '.');
+    if (c == NULL) {
+        return -1;
+    }
+
+    *c = '\0';
+
+    errno = 0;
+    major = strtol(u.release, NULL, 10);
+    if ((errno == EINVAL) || (errno == ERANGE)) {
+        return -1;
+    }
+
+    return major;
+}
+
+static int
+load_kext(void)
+{
+    int result = -1;
+    int pid, terminated_pid;
+    union wait status;
+    long major;
+    char *load_prog_path;
+
+    major = fuse_os_version_major_np();
+
+    if (major < OSXFUSE_MIN_DARWIN_VERSION) {
+        /* This is not a supported version of macOS */
+        return EINVAL;
+    }
+
+    load_prog_path = OSXFUSE_LOAD_PROG;
+    if (!load_prog_path) {
+        fprintf(stderr, "fuse: load program missing\n");
+        goto Return;
+    }
+
+    pid = fork();
+
+    if (pid == 0) {
+        /* Drop saved set-user-ID */
+        setuid(getuid());
+        setgid(getgid());
+
+        result = execl(load_prog_path, load_prog_path, NULL);
+
+        /* exec failed */
+        check_noerr_string(result, strerror(errno));
+        _exit(1);
+    }
+
+    require_action(pid != -1, Return, result = errno);
+
+    while ((terminated_pid = wait4(pid, (int *)&status, 0, NULL)) < 0) {
+        /* retry if EINTR, else break out with error */
+        if (errno != EINTR) {
+            break;
+        }
+    }
+
+    if ((terminated_pid == pid) && (WIFEXITED(status))) {
+        result = WEXITSTATUS(status);
+    } else {
+        result = -1;
+    }
+
+Return:
+    check_noerr_string(result, strerror(errno));
+
+    return result;
 }
 
 static int
@@ -641,7 +745,7 @@ signal_idx_atexit_handler(void)
 
 // We will be called as follows by the FUSE library:
 //
-//   mount_osxfuse -o OPTIONS... <fdnam> <mountpoint>
+//   mount_osxfuse -o OPTIONS... -q <fdnam> <mountpoint>
 
 int
 main(int argc, char **argv)
@@ -680,7 +784,7 @@ main(int argc, char **argv)
             { NULL, 0, NULL, 0 }
         };
 
-        int c = getopt_long(argc, argv, "ho:v", long_options, NULL);
+        int c = getopt_long(argc, argv, "ho:qv", long_options, NULL);
         if (c == -1) {
             break;
         }
@@ -714,6 +818,10 @@ main(int argc, char **argv)
                 }
                 break;
 
+            case 'q':
+                quiet_mode = true;
+                break;
+
             case 'v':
                 showversion(true);
                 break;
@@ -742,6 +850,73 @@ main(int argc, char **argv)
 
     if (!mntpath) {
         errx(EX_USAGE, "missing mount point");
+    }
+
+    result = load_kext();
+    if (result) {
+        if (result == EINVAL) {
+            if (!quiet_mode) {
+                CFUserNotificationDisplayNotice(
+                    (CFTimeInterval)0,
+                    kCFUserNotificationCautionAlertLevel,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    CFSTR("Installed version of macOS unsupported"),
+                    CFSTR("The installed version of FUSE is too new for the operating system. Please downgrade your FUSE installation to one that is compatible with the currently running version of macOS."),
+                    CFSTR("OK"));
+            }
+            post_notification(NOTIFICATION_OS_IS_TOO_OLD, NULL, 0);
+        }
+        if (result == ENOENT) {
+            if (!quiet_mode) {
+                CFUserNotificationDisplayNotice(
+                    (CFTimeInterval)0,
+                    kCFUserNotificationCautionAlertLevel,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    CFSTR("Installed version of macOS unsupported"),
+                    CFSTR("The installed version of FUSE is too old for the operating system. Please upgrade your FUSE installation to one that is compatible with the currently running version of macOS."),
+                    CFSTR("OK"));
+            }
+            post_notification(NOTIFICATION_OS_IS_TOO_NEW, NULL, 0);
+        } else if (result == EBUSY) {
+            if (!quiet_mode) {
+                CFUserNotificationDisplayNotice(
+                    (CFTimeInterval)0,
+                    kCFUserNotificationCautionAlertLevel,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    (CFURLRef)0,
+                    CFSTR("FUSE version mismatch"),
+                    CFSTR("FUSE has been updated but an incompatible or old version of the FUSE kernel extension is already loaded. It failed to unload, possibly because a FUSE volume is currently mounted.\n\nPlease eject all FUSE volumes and try again, or simply restart the system for changes to take effect."),
+                    CFSTR("OK"));
+            }
+            post_notification(NOTIFICATION_VERSION_MISMATCH, NULL, 0);
+        }
+        errx(EX_UNAVAILABLE, "the " OSXFUSE_DISPLAY_NAME " file system is not available (%d)", result);
+    }
+
+    result = check_kext_status();
+    switch (result) {
+        case 0:
+            break;
+
+        case ESRCH:
+            errx(EX_UNAVAILABLE, "the " OSXFUSE_DISPLAY_NAME
+                 " kernel extension is not loaded");
+            break;
+
+        case EINVAL:
+            errx(EX_UNAVAILABLE, "the loaded " OSXFUSE_DISPLAY_NAME
+                 " kernel extension has a mismatched version");
+            break;
+
+        default:
+            errx(EX_UNAVAILABLE, "failed to query the loaded " OSXFUSE_DISPLAY_NAME
+                 " kernel extension (%d)", result);
+            break;
     }
 
     if (!fdnam) {
@@ -797,27 +972,6 @@ main(int argc, char **argv)
 mount:
     signal_fd = fd;
     atexit(&signal_idx_atexit_handler);
-
-    result = check_kext_status();
-    switch (result) {
-    case 0:
-        break;
-
-    case ESRCH:
-        errx(EX_UNAVAILABLE, "the " OSXFUSE_DISPLAY_NAME
-             " kernel extension is not loaded");
-        break;
-
-    case EINVAL:
-        errx(EX_UNAVAILABLE, "the loaded " OSXFUSE_DISPLAY_NAME
-             " kernel extension has a mismatched version");
-        break;
-
-    default:
-        errx(EX_UNAVAILABLE, "failed to query the loaded " OSXFUSE_DISPLAY_NAME
-             " kernel extension (%d)", result);
-        break;
-    }
 
     {
         struct stat sb;

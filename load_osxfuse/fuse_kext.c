@@ -79,7 +79,6 @@
 #include <Availability.h>
 #include <errno.h>
 #include <grp.h>
-#include <libkern/OSKextLib.h>
 #include <sys/mount.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
@@ -95,6 +94,7 @@
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
     #include <IOKit/kext/KextManager.h>
+    #include <libkern/OSKextLib.h>
 #else
     #include <libkern/OSReturn.h>
 
@@ -102,6 +102,8 @@
         CFURLRef kextURL,
         CFArrayRef dependencyKextAndFolderURLs
     ) __attribute__((weak_import));
+
+    #define kOSKextReturnNotFound -603947002
 #endif
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
