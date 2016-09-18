@@ -79,6 +79,7 @@
 #include <Availability.h>
 #include <errno.h>
 #include <grp.h>
+#include <libkern/OSKextLib.h>
 #include <sys/mount.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
@@ -279,6 +280,14 @@ fuse_kext_load(void)
         CFRelease(km_path);
         CFRelease(km_url);
 
+        if (ret == kOSReturnSuccess) {
+            ret = 0;
+        } else if (ret == kOSKextReturnNotFound) {
+            ret = ENOENT;
+        } else {
+            ret = -1;
+        }
+
     } else {
         /*
          * KextManager is not available on Mac OS X versions prior to 10.6. We
@@ -293,8 +302,10 @@ fuse_kext_load(void)
             _exit(1);
         } else {
             int status;
-            if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
+            if (waitpid(pid, &status, 0) == pid && WIFEXITED(status)) {
                 ret = WEXITSTATUS(status);
+            } else {
+                ret = -1;
             }
         }
     }
@@ -335,6 +346,12 @@ fuse_kext_unload(void)
     if (&KextManagerUnloadKextWithIdentifier != NULL) {
         ret = KextManagerUnloadKextWithIdentifier(
                 CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
+        if (ret == kOSReturnSuccess) {
+            ret = 0;
+        } else {
+            ret = -1;
+        }
+
     } else {
         /*
          * KextManager is not available on Mac OS X versions prior to 10.6. We
@@ -350,8 +367,10 @@ fuse_kext_unload(void)
             _exit(1);
         } else {
             int status;
-            if (waitpid(pid, &status, 0) && WIFEXITED(status)) {
+            if (waitpid(pid, &status, 0) == pid && WIFEXITED(status)) {
                 ret = WEXITSTATUS(status);
+            } else {
+                ret = -1;
             }
         }
     }
@@ -360,5 +379,8 @@ fuse_kext_unload(void)
     #pragma clang diagnostic pop
 #endif
 
+    if (ret != 0) {
+        ret = EBUSY;
+    }
     return ret;
 }
