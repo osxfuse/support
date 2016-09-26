@@ -704,7 +704,7 @@ send_fd(int sock_fd, int fd)
     msg.msg_flags = 0;
 
     cmsgp = CMSG_FIRSTHDR(&msg);
-    cmsgp->cmsg_len = CMSG_LEN(sizeof(fd));
+    cmsgp->cmsg_len = (socklen_t)CMSG_LEN(sizeof(fd));
     cmsgp->cmsg_level = SOL_SOCKET;
     cmsgp->cmsg_type = SCM_RIGHTS;
 
