@@ -92,18 +92,15 @@
 
 #define SYSTEM_VERSION_PATH "/System/Library/CoreServices/SystemVersion.plist"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
-    #include <IOKit/kext/KextManager.h>
-    #include <libkern/OSKextLib.h>
-#else
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 1060
     #include <libkern/OSReturn.h>
 
     extern OSReturn KextManagerLoadKextWithURL(
         CFURLRef kextURL,
         CFArrayRef dependencyKextAndFolderURLs
     ) __attribute__((weak_import));
-
-    #define kOSKextReturnNotFound -603947002
+#else
+    #include <IOKit/kext/KextManager.h>
 #endif
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 1070
@@ -112,6 +109,12 @@
     extern OSReturn KextManagerUnloadKextWithIdentifier(
         CFStringRef kextIdentifier
     ) __attribute__((weak_import));
+#endif
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
+    #define kOSKextReturnNotFound -603947002
+#else
+    #include <libkern/OSKextLib.h>
 #endif
 
 static int
