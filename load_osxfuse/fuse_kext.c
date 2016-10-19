@@ -75,6 +75,12 @@
 
 #define SYSTEM_VERSION_PATH "/System/Library/CoreServices/SystemVersion.plist"
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
+    #define kOSKextReturnNotFound -603947002
+#else
+    #include <libkern/OSKextLib.h>
+#endif
+
 static int
 fuse_system_get_version(int *major, int *minor, int *bugfix)
 {
@@ -224,11 +230,18 @@ fuse_kext_load(void)
                                                     true);
 
     ret = KextManagerLoadKextWithURL(km_url, NULL);
+    if (ret == kOSReturnSuccess) {
+        ret = 0;
+    } else if (ret == kOSKextReturnNotFound) {
+        ret = ENOENT;
+    } else {
+        ret = -1;
+    }
 
     CFRelease(km_path);
     CFRelease(km_url);
-
     free(path);
+
     if (ret) {
         return ret;
     }
@@ -250,6 +263,14 @@ fuse_kext_load(void)
 int
 fuse_kext_unload(void)
 {
-    return KextManagerUnloadKextWithIdentifier(
-            CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
+    int ret = 0;
+
+    ret = KextManagerUnloadKextWithIdentifier(CFSTR(OSXFUSE_BUNDLE_IDENTIFIER));
+    if (ret == kOSReturnSuccess) {
+        ret = 0;
+    } else {
+        ret = EBUSY;
+    }
+
+    return ret;
 }
