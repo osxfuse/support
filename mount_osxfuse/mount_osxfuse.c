@@ -924,7 +924,7 @@ main(int argc, char **argv)
 
         commfd = getenv("_FUSE_COMMFD");
         if (commfd == NULL) {
-            errx(EX_USAGE, "mew style mounting requires commfd");
+            errx(EX_USAGE, "new style mounting requires commfd");
         }
 
         errno = 0;
