@@ -1126,6 +1126,13 @@ mount:
         snprintf(args.volname, MAXPATHLEN, "%s", volname);
     }
 
+    if (cfd != -1) {
+        result = send_fd(cfd, fd);
+        if (result == -1) {
+            err(EX_OSERR, "failed to send file descriptor");
+        }
+    }
+
     /* Finally! */
     result = mount(OSXFUSE_NAME, mntpath, mntflags, (void *)&args);
 
@@ -1135,13 +1142,6 @@ mount:
     } else {
         const char *dict[][2] = { { kFUSEMountPathKey, mntpath } };
         post_notification(NOTIFICATION_MOUNT, dict, 1);
-    }
-
-    if (cfd != -1) {
-        result = send_fd(cfd, fd);
-        if (result == -1) {
-            err(EX_OSERR, "failed to send file descriptor");
-        }
     }
 
     signal_fd = -1;
