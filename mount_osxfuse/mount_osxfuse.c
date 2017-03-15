@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <AssertMacros.h>
+#include <AvailabilityMacros.h>
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -678,6 +679,27 @@ check_kext_status(void)
     return 0;
 }
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED <= 1050
+
+#define FUSE_ALIGNBYTES32 (sizeof(__uint32_t) - 1)
+#define FUSE_ALIGN32(p) \
+    ((__darwin_size_t)((char *)(__darwin_size_t)(p) + FUSE_ALIGNBYTES32) \
+     & ~FUSE_ALIGNBYTES32)
+
+#define FUSE_CMSG_DATA(cmsg) \
+    ((unsigned char *)(cmsg) + FUSE_ALIGN32(sizeof(struct cmsghdr)))
+#define FUSE_CMSG_SPACE(l) \
+    (FUSE_ALIGN32(sizeof(struct cmsghdr)) + FUSE_ALIGN32(l))
+#define FUSE_CMSG_LEN(l) (FUSE_ALIGN32(sizeof(struct cmsghdr)) + (l))
+
+#else /* MAC_OS_X_VERSION_MAX_ALLOWED <= 1050 */
+
+#define FUSE_CMSG_DATA(cmsg) CMSG_DATA(cmsg)
+#define FUSE_CMSG_SPACE(l) CMSG_SPACE(l)
+#define FUSE_CMSG_LEN(l) CMSG_LEN(l)
+
+#endif /* MAC_OS_X_VERSION_MAX_ALLOWED <= 1050 */
+
 static int
 send_fd(int sock_fd, int fd)
 {
@@ -687,7 +709,7 @@ send_fd(int sock_fd, int fd)
     char sendchar = 0;
 
     struct msghdr msg;
-    char cmsgbuf[CMSG_SPACE(sizeof(fd))];
+    char cmsgbuf[FUSE_CMSG_SPACE(sizeof(fd))];
     struct cmsghdr *cmsgp;
 
     vec.iov_base = &sendchar;
@@ -704,11 +726,11 @@ send_fd(int sock_fd, int fd)
     msg.msg_flags = 0;
 
     cmsgp = CMSG_FIRSTHDR(&msg);
-    cmsgp->cmsg_len = (socklen_t)CMSG_LEN(sizeof(fd));
+    cmsgp->cmsg_len = (socklen_t)FUSE_CMSG_LEN(sizeof(fd));
     cmsgp->cmsg_level = SOL_SOCKET;
     cmsgp->cmsg_type = SCM_RIGHTS;
 
-    memcpy(CMSG_DATA(cmsgp), &fd, sizeof(fd));
+    memcpy(FUSE_CMSG_DATA(cmsgp), &fd, sizeof(fd));
 
     msg.msg_controllen = cmsgp->cmsg_len;
 
