@@ -112,7 +112,33 @@
 #endif
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
-    #define kOSKextReturnNotFound -603947002
+    #define kOSKextReturnNotFound             -603947002
+    #define kOSKextReturnInternalError        -603947007
+    #define kOSKextReturnNoMemory             -603947006
+    #define kOSKextReturnNoResources          -603947005
+    #define kOSKextReturnNotPrivileged        -603947004
+    #define kOSKextReturnInvalidArgument      -603947003
+    #define kOSKextReturnNotFound             -603947002
+    #define kOSKextReturnBadData              -603947001
+    #define kOSKextReturnSerialization        -603947000
+    #define kOSKextReturnUnsupported          -603946999
+    #define kOSKextReturnDisabled             -603946998
+    #define kOSKextReturnNotAKext             -603946997
+    #define kOSKextReturnValidation           -603946996
+    #define kOSKextReturnAuthentication       -603946995
+    #define kOSKextReturnDependencies         -603946994
+    #define kOSKextReturnArchNotFound         -603946993
+    #define kOSKextReturnCache                -603946992
+    #define kOSKextReturnDeferred             -603946991
+    #define kOSKextReturnBootLevel            -603946990
+    #define kOSKextReturnNotLoadable          -603946989
+    #define kOSKextReturnLoadedVersionDiffers -603946988
+    #define kOSKextReturnDependencyLoadError  -603946987
+    #define kOSKextReturnLinkError            -603946986
+    #define kOSKextReturnStartStopError       -603946985
+    #define kOSKextReturnInUse                -603946984
+    #define kOSKextReturnTimeout              -603946983
+    #define kOSKextReturnStopping             -603946982
 #else
     #include <libkern/OSKextLib.h>
 #endif
@@ -289,6 +315,8 @@ fuse_kext_load(void)
             ret = 0;
         } else if (ret == kOSKextReturnNotFound) {
             ret = ENOENT;
+        } else if (ret == kOSKextReturnNotLoadable) {
+            ret = ENOTSUP;
         } else {
             ret = -1;
         }
