@@ -795,8 +795,8 @@ main(int argc, char **argv)
     fuse_mount_args args;
 
     // Drop to real uid and gid
-    seteuid(getuid());
-    setegid(getgid());
+    (void)seteuid(getuid());
+    (void)setegid(getgid());
 
     if (!getenv("MOUNT_OSXFUSE_CALL_BY_LIB")) {
         showhelp();
@@ -1055,21 +1055,19 @@ mount:
     }
 
     while (true) {
-        struct stat sb;
+        struct stat sbuf;
 
         if (realpath(mntpath, args.mntpath) != NULL &&
-            stat(args.mntpath, &sb) == 0) {
+            stat(args.mntpath, &sbuf) == 0) {
 
-            if (S_ISDIR(sb.st_mode)) {
+            if (S_ISDIR(sbuf.st_mode)) {
                 break;
             } else {
                 errx(EX_USAGE, "%s: not a directory", args.mntpath);
             }
-
         } else if (errno == ENOENT) {
             bool volumes = strncmp(args.mntpath, "/Volumes/", 9) == 0 &&
                            strchr(args.mntpath + 9, '/') == NULL;
-
             if (volumes) {
                 (void)seteuid(0);
                 (void)setegid(0);
@@ -1087,11 +1085,14 @@ mount:
                 (void)seteuid(uid);
                 (void)setegid(gid);
             }
-
         } else {
             errx(EX_USAGE, "%s: %s", args.mntpath, strerror(errno));
         }
     }
+
+    // Drop privileges
+    (void)setuid(getuid());
+    (void)setgid(getgid());
 
     mntpath = args.mntpath;
 
