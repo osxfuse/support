@@ -933,7 +933,7 @@ main(int argc, char **argv)
                     (CFURLRef)NULL,
                     (CFURLRef)NULL,
                     CFSTR("System Extension Blocked"),
-                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease go to the Security & Privacy System Preferences pane and allow loading system software from Benjamin Fleischer.\n\nThen try again mounting the volume."),
+                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease go to the \"Security & Privacy\" System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try again mounting the volume."),
                     CFSTR("Open System Preferences"),
                     CFSTR("Cancel"),
                     NULL,
