@@ -35,6 +35,7 @@
 #include <unistd.h>
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <CoreServices/CoreServices.h>
 
 #include <fuse_ioctl.h>
 #include <fuse_mount.h>
@@ -443,6 +444,7 @@ enum osxfuse_notification {
     NOTIFICATION_OS_IS_TOO_NEW,
     NOTIFICATION_OS_IS_TOO_OLD,
     NOTIFICATION_VERSION_MISMATCH,
+    NOTIFICATION_NOT_LOADABLE,
     NOTIFICATION_MOUNT
 };
 typedef enum osxfuse_notification osxfuse_notification_t;
@@ -451,6 +453,7 @@ const char * const osxfuse_notification_names[] = {
     "k" OSXFUSE_DISPLAY_NAME "OSIsTooNew",      // NOTIFICATION_OS_IS_TOO_NEW
     "k" OSXFUSE_DISPLAY_NAME "OSIsTooOld",      // NOTIFICATION_OS_IS_TOO_OLD
     "k" OSXFUSE_DISPLAY_NAME "VersionMismatch", // NOTIFICATION_VERSION_MISMATCH
+    "k" OSXFUSE_DISPLAY_NAME "NotLoadable",     // NOTIFICATION_NOT_LOADABLE
     "k" OSXFUSE_DISPLAY_NAME "Mount"            // NOTIFICATION_MOUNT
 };
 
@@ -730,8 +733,8 @@ main(int argc, char **argv)
     fuse_mount_args args;
 
     // Drop to real uid and gid
-    seteuid(getuid());
-    setegid(getgid());
+    (void)seteuid(getuid());
+    (void)setegid(getgid());
 
     if (!getenv("MOUNT_OSXFUSE_CALL_BY_LIB")) {
         showhelp();
@@ -826,15 +829,17 @@ main(int argc, char **argv)
 
     result = load_kext();
     if (result) {
+        CFURLRef icon_url = CFURLCreateWithFileSystemPath(NULL, CFSTR(OSXFUSE_RESOURCES_PATH "/Volume.icns"), kCFURLPOSIXPathStyle, TRUE);
+        
         if (result == EINVAL) {
             if (!quiet_mode) {
                 CFUserNotificationDisplayNotice(
                     (CFTimeInterval)0,
                     kCFUserNotificationCautionAlertLevel,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    CFSTR("Installed version of macOS unsupported"),
+                    icon_url,
+                    (CFURLRef)NULL,
+                    (CFURLRef)NULL,
+                    CFSTR("Unsupported macOS Version"),
                     CFSTR("The installed version of FUSE is too new for the operating system. Please downgrade your FUSE installation to one that is compatible with the currently running version of macOS."),
                     CFSTR("OK"));
             }
@@ -845,10 +850,10 @@ main(int argc, char **argv)
                 CFUserNotificationDisplayNotice(
                     (CFTimeInterval)0,
                     kCFUserNotificationCautionAlertLevel,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    CFSTR("Installed version of macOS unsupported"),
+                    icon_url,
+                    (CFURLRef)NULL,
+                    (CFURLRef)NULL,
+                    CFSTR("Unsupported macOS Version"),
                     CFSTR("The installed version of FUSE is too old for the operating system. Please upgrade your FUSE installation to one that is compatible with the currently running version of macOS."),
                     CFSTR("OK"));
             }
@@ -858,16 +863,41 @@ main(int argc, char **argv)
                 CFUserNotificationDisplayNotice(
                     (CFTimeInterval)0,
                     kCFUserNotificationCautionAlertLevel,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    (CFURLRef)0,
-                    CFSTR("FUSE version mismatch"),
-                    CFSTR("FUSE has been updated but an incompatible or old version of the FUSE kernel extension is already loaded. It failed to unload, possibly because a FUSE volume is currently mounted.\n\nPlease eject all FUSE volumes and try again, or simply restart the system for changes to take effect."),
+                    icon_url,
+                    (CFURLRef)NULL,
+                    (CFURLRef)NULL,
+                    CFSTR("Version Mismatch"),
+                    CFSTR("FUSE has been updated but an incompatible or old version of the system extension is already loaded. It failed to unload, possibly because a FUSE volume is currently mounted.\n\nPlease eject all FUSE volumes and try again, or simply restart the system for changes to take effect."),
                     CFSTR("OK"));
             }
             post_notification(NOTIFICATION_VERSION_MISMATCH, NULL, 0);
+        } else if (result == ENOTSUP) {
+            if (!quiet_mode) {
+                CFOptionFlags response_flags = 0;
+                CFUserNotificationDisplayAlert(
+                    (CFTimeInterval)0,
+                    kCFUserNotificationCautionAlertLevel,
+                    icon_url,
+                    (CFURLRef)NULL,
+                    (CFURLRef)NULL,
+                    CFSTR("System Extension Blocked"),
+                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease go to the \"Security & Privacy\" System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try again mounting the volume."),
+                    CFSTR("Open System Preferences"),
+                    CFSTR("Cancel"),
+                    NULL,
+                    &response_flags);
+                
+                if (response_flags == kCFUserNotificationDefaultResponse) {
+                    CFURLRef url = CFURLCreateWithFileSystemPath(NULL, CFSTR("/System/Library/PreferencePanes/Security.prefPane"), kCFURLPOSIXPathStyle, TRUE);
+                    LSOpenCFURLRef(url, NULL);
+                    CFRelease(url);
+                }
+            }
+            post_notification(NOTIFICATION_NOT_LOADABLE, NULL, 0);
         }
-        errx(EX_UNAVAILABLE, "the " OSXFUSE_DISPLAY_NAME " file system is not available (%d)", result);
+        
+        CFRelease(icon_url);
+        errx(EX_UNAVAILABLE, "the file system is not available (%d)", result);
     }
 
     result = check_kext_status();
@@ -957,21 +987,19 @@ mount:
     }
 
     while (true) {
-        struct stat sb;
+        struct stat sbuf;
 
         if (realpath(mntpath, args.mntpath) != NULL &&
-            stat(args.mntpath, &sb) == 0) {
+            stat(args.mntpath, &sbuf) == 0) {
 
-            if (S_ISDIR(sb.st_mode)) {
+            if (S_ISDIR(sbuf.st_mode)) {
                 break;
             } else {
                 errx(EX_USAGE, "%s: not a directory", args.mntpath);
             }
-
         } else if (errno == ENOENT) {
             bool volumes = strncmp(args.mntpath, "/Volumes/", 9) == 0 &&
                            strchr(args.mntpath + 9, '/') == NULL;
-
             if (volumes) {
                 (void)seteuid(0);
                 (void)setegid(0);
@@ -989,11 +1017,14 @@ mount:
                 (void)seteuid(uid);
                 (void)setegid(gid);
             }
-
         } else {
             errx(EX_USAGE, "%s: %s", args.mntpath, strerror(errno));
         }
     }
+
+    // Drop privileges
+    (void)setuid(getuid());
+    (void)setgid(getgid());
 
     mntpath = args.mntpath;
 

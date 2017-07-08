@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4339D5BF1EF2C8CB00546863 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4339D5BE1EF2C8BB00546863 /* CoreServices.framework */; };
 		540966630C33B60B00F5E227 /* getmntopts.c in Sources */ = {isa = PBXBuildFile; fileRef = 5409665F0C33B60B00F5E227 /* getmntopts.c */; };
 		540966650C33B60B00F5E227 /* mount_osxfuse.c in Sources */ = {isa = PBXBuildFile; fileRef = 540966620C33B60B00F5E227 /* mount_osxfuse.c */; };
 		540966950C33B99A00F5E227 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 541780C00B6413CA003DE6C0 /* CoreFoundation.framework */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4339D5BE1EF2C8BB00546863 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		433E5DC413B2D1B300A523B2 /* mount_osxfuse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mount_osxfuse; sourceTree = BUILT_PRODUCTS_DIR; };
 		43A374241A59E534007A64F9 /* fuse_preprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fuse_preprocessor.h; sourceTree = "<group>"; };
 		540966520C33B5F500F5E227 /* fuse_ioctl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_ioctl.h; sourceTree = "<group>"; };
@@ -33,6 +35,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				540966950C33B99A00F5E227 /* CoreFoundation.framework in Frameworks */,
+				4339D5BF1EF2C8CB00546863 /* CoreServices.framework in Frameworks */,
 				540966990C33B9A300F5E227 /* DiskArbitration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				541780C00B6413CA003DE6C0 /* CoreFoundation.framework */,
+				4339D5BE1EF2C8BB00546863 /* CoreServices.framework */,
 				54BBC8F50B4C379500A17C8A /* DiskArbitration.framework */,
 			);
 			name = Frameworks;

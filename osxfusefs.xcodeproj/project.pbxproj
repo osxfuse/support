@@ -10,6 +10,7 @@
 		431F463D169B4AAC00A0F622 /* License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 431F4639169B49DE00A0F622 /* License.rtf */; };
 		4331907E169514D500DE73A9 /* load_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190751695145C00DE73A9 /* load_osxfuse */; };
 		4331907F169514D900DE73A9 /* mount_osxfuse in Resources */ = {isa = PBXBuildFile; fileRef = 433190781695145C00DE73A9 /* mount_osxfuse */; };
+		4339D5C11EF2CB5E00546863 /* Volume.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4339D5C01EF2CB5200546863 /* Volume.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		431F4639169B49DE00A0F622 /* License.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = License.rtf; sourceTree = "<group>"; };
 		433190651695145C00DE73A9 /* load_osxfuse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = load_osxfuse.xcodeproj; sourceTree = "<group>"; };
 		433190681695145C00DE73A9 /* mount_osxfuse.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = mount_osxfuse.xcodeproj; sourceTree = "<group>"; };
+		4339D5C01EF2CB5200546863 /* Volume.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Volume.icns; sourceTree = "<group>"; };
 		435958DA15120F5500B4D7F5 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		437FB63015E1798100CFF17A /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		439769351693A377001B7C4A /* osxfuse.fs */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = osxfuse.fs; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,6 +107,7 @@
 			children = (
 				431F4639169B49DE00A0F622 /* License.rtf */,
 				439769381693A377001B7C4A /* Supporting Files */,
+				4339D5C01EF2CB5200546863 /* Volume.icns */,
 			);
 			name = osxfuse.fs;
 			path = osxfusefs;
@@ -229,6 +232,7 @@
 				4331907E169514D500DE73A9 /* load_osxfuse in Resources */,
 				4331907F169514D900DE73A9 /* mount_osxfuse in Resources */,
 				431F463D169B4AAC00A0F622 /* License.rtf in Resources */,
+				4339D5C11EF2CB5E00546863 /* Volume.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
