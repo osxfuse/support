@@ -111,6 +111,10 @@
     ) __attribute__((weak_import));
 #endif
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
+    #define kOSKextReturnSystemPolicy         -603946981
+#endif
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
     #define kOSKextReturnNotFound             -603947002
     #define kOSKextReturnInternalError        -603947007
@@ -315,8 +319,8 @@ fuse_kext_load(void)
             ret = 0;
         } else if (ret == kOSKextReturnNotFound) {
             ret = ENOENT;
-        } else if (ret == kOSKextReturnNotLoadable) {
-            ret = ENOTSUP;
+        } else if (ret == kOSKextReturnSystemPolicy) {
+            ret = EPERM;
         } else {
             ret = -1;
         }

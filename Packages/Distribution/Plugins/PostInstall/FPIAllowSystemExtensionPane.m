@@ -181,7 +181,7 @@
     int terminationStatus = [task terminationStatus];
     [task autorelease];
 
-    [self setSystemExtensionAllowed:(terminationStatus != ENOTSUP)];
+    [self setSystemExtensionAllowed:(terminationStatus != EPERM)];
 }
 
 - (void)setSystemExtensionAllowed:(BOOL)systemExtensionAllowed
