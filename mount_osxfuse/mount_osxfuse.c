@@ -444,7 +444,7 @@ enum osxfuse_notification {
     NOTIFICATION_OS_IS_TOO_NEW,
     NOTIFICATION_OS_IS_TOO_OLD,
     NOTIFICATION_VERSION_MISMATCH,
-    NOTIFICATION_NOT_LOADABLE,
+    NOTIFICATION_SYSTEM_POLICY,
     NOTIFICATION_MOUNT
 };
 typedef enum osxfuse_notification osxfuse_notification_t;
@@ -453,7 +453,7 @@ const char * const osxfuse_notification_names[] = {
     "k" OSXFUSE_DISPLAY_NAME "OSIsTooNew",      // NOTIFICATION_OS_IS_TOO_NEW
     "k" OSXFUSE_DISPLAY_NAME "OSIsTooOld",      // NOTIFICATION_OS_IS_TOO_OLD
     "k" OSXFUSE_DISPLAY_NAME "VersionMismatch", // NOTIFICATION_VERSION_MISMATCH
-    "k" OSXFUSE_DISPLAY_NAME "NotLoadable",     // NOTIFICATION_NOT_LOADABLE
+    "k" OSXFUSE_DISPLAY_NAME "SystemPolicy",    // NOTIFICATION_SYSTEM_POLICY
     "k" OSXFUSE_DISPLAY_NAME "Mount"            // NOTIFICATION_MOUNT
 };
 
@@ -871,7 +871,7 @@ main(int argc, char **argv)
                     CFSTR("OK"));
             }
             post_notification(NOTIFICATION_VERSION_MISMATCH, NULL, 0);
-        } else if (result == ENOTSUP) {
+        } else if (result == EPERM) {
             if (!quiet_mode) {
                 CFOptionFlags response_flags = 0;
                 CFUserNotificationDisplayAlert(
@@ -881,7 +881,7 @@ main(int argc, char **argv)
                     (CFURLRef)NULL,
                     (CFURLRef)NULL,
                     CFSTR("System Extension Blocked"),
-                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease go to the \"Security & Privacy\" System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try again mounting the volume."),
+                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease open the Security & Privacy System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try again mounting the volume."),
                     CFSTR("Open System Preferences"),
                     CFSTR("Cancel"),
                     NULL,
@@ -893,7 +893,7 @@ main(int argc, char **argv)
                     CFRelease(url);
                 }
             }
-            post_notification(NOTIFICATION_NOT_LOADABLE, NULL, 0);
+            post_notification(NOTIFICATION_SYSTEM_POLICY, NULL, 0);
         }
         
         CFRelease(icon_url);
