@@ -297,7 +297,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.osxfuse.installerplugin.PostInstall;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"VALID_ARCHS[sdk=macosx10.5]" = "i386 ppc";
-				"VALID_ARCHS[sdk=macosx10.12]" = "x86_64";
+				"VALID_ARCHS[sdk=macosx10.12]" = x86_64;
+				"VALID_ARCHS[sdk=macosx10.13]" = x86_64;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -311,7 +312,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.osxfuse.installerplugin.PostInstall;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"VALID_ARCHS[sdk=macosx10.5]" = "i386 ppc";
-				"VALID_ARCHS[sdk=macosx10.12]" = "x86_64";
+				"VALID_ARCHS[sdk=macosx10.12]" = x86_64;
+				"VALID_ARCHS[sdk=macosx10.13]" = x86_64;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

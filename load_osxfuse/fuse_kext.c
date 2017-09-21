@@ -75,10 +75,6 @@
 
 #define SYSTEM_VERSION_PATH "/System/Library/CoreServices/SystemVersion.plist"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
-    #define kOSKextReturnSystemPolicy         -603946981
-#endif
-
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
     #define kOSKextReturnNotFound             -603947002
     #define kOSKextReturnInternalError        -603947007
@@ -109,6 +105,10 @@
     #define kOSKextReturnStopping             -603946982
 #else
     #include <libkern/OSKextLib.h>
+#endif
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
+    #define kOSKextReturnSystemPolicy         -603946981
 #endif
 
 static int
