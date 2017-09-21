@@ -583,11 +583,11 @@ load_kext(void)
         result = execl(load_prog_path, load_prog_path, NULL);
 
         /* exec failed */
-        check_noerr_string(result, strerror(errno));
+        __Check_noErr_String(result, strerror(errno));
         _exit(1);
     }
 
-    require_action(pid != -1, Return, result = errno);
+    __Require_Action(pid != -1, Return, result = errno);
 
     while ((terminated_pid = wait4(pid, (int *)&status, 0, NULL)) < 0) {
         /* retry if EINTR, else break out with error */
@@ -603,7 +603,7 @@ load_kext(void)
     }
 
 Return:
-    check_noerr_string(result, strerror(errno));
+    __Check_noErr_String(result, strerror(errno));
 
     return result;
 }
