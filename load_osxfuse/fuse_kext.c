@@ -111,10 +111,6 @@
     ) __attribute__((weak_import));
 #endif
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
-    #define kOSKextReturnSystemPolicy         -603946981
-#endif
-
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101100
     #define kOSKextReturnNotFound             -603947002
     #define kOSKextReturnInternalError        -603947007
@@ -145,6 +141,10 @@
     #define kOSKextReturnStopping             -603946982
 #else
     #include <libkern/OSKextLib.h>
+#endif
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
+    #define kOSKextReturnSystemPolicy         -603946981
 #endif
 
 static int
