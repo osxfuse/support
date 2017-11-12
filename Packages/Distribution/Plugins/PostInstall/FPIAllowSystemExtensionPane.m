@@ -212,10 +212,14 @@
 
 - (void)openSystemPreferences
 {
-    NSURL *securityPreferencesPaneURL = [NSURL fileURLWithPath:FPISecurityPreferencesPanePath];
+    NSString *script = @"tell application \"System Preferences\"\n" \
+                        "    set the current pane to pane id \"com.apple.preference.security\"\n" \
+                        "    reveal anchor \"General\" of pane id \"com.apple.preference.security\"\n" \
+                        "    activate\n" \
+                        "end tell";
 
-    NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-    [workspace openURL:securityPreferencesPaneURL];
+    NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
+    [appleScript executeAndReturnError:nil];
 }
 
 @end

@@ -1,5 +1,5 @@
 "AllowSystemExtensionPaneTitle" = "Complete Installation";
 
 "SystemExtensionAllowed" = "The system extension required for mounting FUSE volumes has been successfully loaded.";
-"SystemExtensionBlocked" = "The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease open the Security & Privacy System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".";
+"SystemExtensionBlocked" = "The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease open the Security & Privacy System Preferences pane, go to the General preferences and allow loading system software from developer \"Benjamin Fleischer\".";
 "OpenSystemPreferences" = "Open Security & Privacy System Preferences";
