@@ -933,16 +933,18 @@ main(int argc, char **argv)
                     (CFURLRef)NULL,
                     (CFURLRef)NULL,
                     CFSTR("System Extension Blocked"),
-                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease open the Security & Privacy System Preferences pane and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try again mounting the volume."),
+                    CFSTR("The system extension required for mounting FUSE volumes could not be loaded.\n\nPlease open the Security & Privacy System Preferences pane, go to the General preferences and allow loading system software from developer \"Benjamin Fleischer\".\n\nThen try mounting the volume again."),
                     CFSTR("Open System Preferences"),
                     CFSTR("Cancel"),
                     NULL,
                     &response_flags);
                 
                 if (response_flags == kCFUserNotificationDefaultResponse) {
-                    CFURLRef url = CFURLCreateWithFileSystemPath(NULL, CFSTR("/System/Library/PreferencePanes/Security.prefPane"), kCFURLPOSIXPathStyle, TRUE);
-                    LSOpenCFURLRef(url, NULL);
-                    CFRelease(url);
+                    system("/usr/bin/osascript -e 'tell application \"System Preferences\"'" \
+                           "                   -e 'set the current pane to pane id \"com.apple.preference.security\"'" \
+                           "                   -e 'reveal anchor \"General\" of pane id \"com.apple.preference.security\"'" \
+                           "                   -e 'activate'" \
+                           "                   -e 'end tell'");
                 }
             }
             post_notification(NOTIFICATION_SYSTEM_POLICY, NULL, 0);
