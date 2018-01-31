@@ -1,5 +1,5 @@
 "AllowSystemExtensionPaneTitle" = "Installation abschließen";
 
 "SystemExtensionAllowed" = "Die Systemerweiterung, die zum Aktivieren von FUSE Volumes benötigt wird, wurde erfolgreich geladen.";
-"SystemExtensionBlocked" = "Die Systemerweiterung, die zum Aktivieren von FUSE Volumes benötigt wird, konnte nicht geladen werden.\n\nBitte öffnen Sie die Systemeinstellung Sicherheit und erlauben Sie im Bereich „Allgemein“ das Laden von Systemsoftware des Entwicklers „Benjamin Fleischer“.";
-"OpenSystemPreferences" = "Systemeinstellung Sicherheit öffnen";
+"SystemExtensionBlocked" = "Die Systemerweiterung, die zum Aktivieren von FUSE Volumes benötigt wird, konnte nicht geladen werden.\n\nBitte öffnen Sie die Systemeinstellung „Sicherheit“ und erlauben Sie im Bereich „Allgemein“ das Laden von Systemsoftware des Entwicklers „Benjamin Fleischer“.";
+"OpenSystemPreferences" = "Systemeinstellung „Sicherheit“ öffnen";
