@@ -33,7 +33,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
-#include <fuse_param.h>
+#include "fuse_param.h"
 
 #include "fuse_kext.h"
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2006-2008 Amit Singh/Google Inc.
- * Copyright (c) 2011-2016 Benjamin Fleischer
+ * Copyright (c) 2011-2018 Benjamin Fleischer
  * All rights reserved.
  */
 
@@ -38,10 +38,10 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 
-#include <fuse_ioctl.h>
-#include <fuse_mount.h>
-#include <fuse_param.h>
-#include <fuse_version.h>
+#include "fuse_ioctl.h"
+#include "fuse_mount.h"
+#include "fuse_param.h"
+#include "fuse_version.h"
 
 #include "mntopts.h"
 

@@ -87,8 +87,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include <fuse_param.h>
-#include <fuse_version.h>
+#include "fuse_param.h"
+#include "fuse_version.h"
 
 #define SYSTEM_VERSION_PATH "/System/Library/CoreServices/SystemVersion.plist"
 

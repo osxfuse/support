@@ -255,7 +255,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../common";
 				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 				VALID_ARCHS = "ppc i386 x86_64";
@@ -266,7 +265,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../common";
 				OTHER_LDFLAGS = "-Wl,-flat_namespace,-U,_KextManagerLoadKextWithURL,-U,_KextManagerUnloadKextWithIdentifier";
 				PRODUCT_NAME = "load_$(OSXFUSE_NAME)";
 				VALID_ARCHS = "ppc i386 x86_64";
