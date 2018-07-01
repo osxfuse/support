@@ -1002,9 +1002,6 @@ main(int argc, char **argv)
         goto mount;
     }
 
-    (void)seteuid(0);
-    (void)setegid(0);
-
     dev = getenv("FUSE_DEV_NAME");
     if (dev) {
         fd = open(dev, O_RDWR);
@@ -1012,7 +1009,7 @@ main(int argc, char **argv)
             errx(EX_USAGE, "failed to open device");
         }
 
-        goto mount_drop;
+        goto mount;
     }
 
     for (r = 0; r < OSXFUSE_NDEVICES; r++) {
@@ -1027,10 +1024,6 @@ main(int argc, char **argv)
     if (dindex == -1) {
         errx(EX_OSERR, "failed to open device");
     }
-
-mount_drop:
-    (void)seteuid(getuid());
-    (void)setegid(getgid());
 
 mount:
     signal_fd = fd;
