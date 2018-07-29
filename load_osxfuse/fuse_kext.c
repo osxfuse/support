@@ -267,6 +267,7 @@ fuse_kext_load(void)
     } else if (ret == kOSKextReturnSystemPolicy) {
         ret = EPERM;
     } else {
+        fprintf(stderr, "kext load failed: %d\n", ret);
         ret = -1;
     }
 
